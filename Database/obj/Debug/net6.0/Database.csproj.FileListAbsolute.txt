@@ -1,0 +1,17 @@
+C:\3_Code\cs\TestingApp\Database\bin\Debug\net6.0\Database.deps.json
+C:\3_Code\cs\TestingApp\Database\bin\Debug\net6.0\Database.dll
+C:\3_Code\cs\TestingApp\Database\bin\Debug\net6.0\Database.pdb
+C:\3_Code\cs\TestingApp\Database\bin\Debug\net6.0\Common.dll
+C:\3_Code\cs\TestingApp\Database\bin\Debug\net6.0\Settings.dll
+C:\3_Code\cs\TestingApp\Database\bin\Debug\net6.0\Common.pdb
+C:\3_Code\cs\TestingApp\Database\bin\Debug\net6.0\Settings.pdb
+C:\3_Code\cs\TestingApp\Database\obj\Debug\net6.0\Database.csproj.AssemblyReference.cache
+C:\3_Code\cs\TestingApp\Database\obj\Debug\net6.0\Database.GeneratedMSBuildEditorConfig.editorconfig
+C:\3_Code\cs\TestingApp\Database\obj\Debug\net6.0\Database.AssemblyInfoInputs.cache
+C:\3_Code\cs\TestingApp\Database\obj\Debug\net6.0\Database.AssemblyInfo.cs
+C:\3_Code\cs\TestingApp\Database\obj\Debug\net6.0\Database.csproj.CoreCompileInputs.cache
+C:\3_Code\cs\TestingApp\Database\obj\Debug\net6.0\Database.csproj.CopyComplete
+C:\3_Code\cs\TestingApp\Database\obj\Debug\net6.0\Database.dll
+C:\3_Code\cs\TestingApp\Database\obj\Debug\net6.0\refint\Database.dll
+C:\3_Code\cs\TestingApp\Database\obj\Debug\net6.0\Database.pdb
+C:\3_Code\cs\TestingApp\Database\obj\Debug\net6.0\ref\Database.dll

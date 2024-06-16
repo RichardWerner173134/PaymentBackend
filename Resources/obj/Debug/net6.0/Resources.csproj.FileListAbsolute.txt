@@ -1,0 +1,11 @@
+C:\3_Code\cs\TestingApp\Resources\bin\Debug\net6.0\Resources.deps.json
+C:\3_Code\cs\TestingApp\Resources\bin\Debug\net6.0\Resources.dll
+C:\3_Code\cs\TestingApp\Resources\bin\Debug\net6.0\Resources.pdb
+C:\3_Code\cs\TestingApp\Resources\obj\Debug\net6.0\Resources.GeneratedMSBuildEditorConfig.editorconfig
+C:\3_Code\cs\TestingApp\Resources\obj\Debug\net6.0\Resources.AssemblyInfoInputs.cache
+C:\3_Code\cs\TestingApp\Resources\obj\Debug\net6.0\Resources.AssemblyInfo.cs
+C:\3_Code\cs\TestingApp\Resources\obj\Debug\net6.0\Resources.csproj.CoreCompileInputs.cache
+C:\3_Code\cs\TestingApp\Resources\obj\Debug\net6.0\Resources.dll
+C:\3_Code\cs\TestingApp\Resources\obj\Debug\net6.0\refint\Resources.dll
+C:\3_Code\cs\TestingApp\Resources\obj\Debug\net6.0\Resources.pdb
+C:\3_Code\cs\TestingApp\Resources\obj\Debug\net6.0\ref\Resources.dll

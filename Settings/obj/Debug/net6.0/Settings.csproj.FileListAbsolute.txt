@@ -1,0 +1,12 @@
+C:\3_Code\cs\TestingApp\Settings\bin\Debug\net6.0\Settings.deps.json
+C:\3_Code\cs\TestingApp\Settings\bin\Debug\net6.0\Settings.dll
+C:\3_Code\cs\TestingApp\Settings\bin\Debug\net6.0\Settings.pdb
+C:\3_Code\cs\TestingApp\Settings\obj\Debug\net6.0\Settings.csproj.AssemblyReference.cache
+C:\3_Code\cs\TestingApp\Settings\obj\Debug\net6.0\Settings.GeneratedMSBuildEditorConfig.editorconfig
+C:\3_Code\cs\TestingApp\Settings\obj\Debug\net6.0\Settings.AssemblyInfoInputs.cache
+C:\3_Code\cs\TestingApp\Settings\obj\Debug\net6.0\Settings.AssemblyInfo.cs
+C:\3_Code\cs\TestingApp\Settings\obj\Debug\net6.0\Settings.csproj.CoreCompileInputs.cache
+C:\3_Code\cs\TestingApp\Settings\obj\Debug\net6.0\Settings.dll
+C:\3_Code\cs\TestingApp\Settings\obj\Debug\net6.0\refint\Settings.dll
+C:\3_Code\cs\TestingApp\Settings\obj\Debug\net6.0\Settings.pdb
+C:\3_Code\cs\TestingApp\Settings\obj\Debug\net6.0\ref\Settings.dll

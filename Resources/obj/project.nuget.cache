@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "QpKf9LJBqLezFaKGkly77mAsezrSVt1p6BgQDbgmq8hj0sK0MrVitkGZRnZZJZGXbPgspsQaYTsUGDTIkBwOpg==",
+  "dgSpecHash": "v9K3feS+oTxEOpPQWmCcSn3U4aMVbN0dfROdBbgCAMSWgAroiQLKFnaPolhFxI/M0nDyMlDXEhVhQq8u0kdl4g==",
   "success": true,
-  "projectFilePath": "C:\\3_Code\\cs\\TestingApp\\Resources\\Resources.csproj",
+  "projectFilePath": "C:\\3_Code\\cs\\PaymentBackend\\Resources\\Resources.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }

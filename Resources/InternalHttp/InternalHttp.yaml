@@ -19,22 +19,227 @@ paths:
     get:
       summary: summary
       description: description
+      tags: [users]
       responses:
         '200':
           description: Successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserResponse'
+                $ref: '#/components/schemas/GetUsersResponse'
+  /payments:
+    get: 
+      summary: get a list of payments
+      description: get a list of payments
+      tags: [payments]
+      responses:
+        '200':
+          description: Success
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/GetPaymentsResponse'
+    post:
+      summary: post a new payment
+      description: post a new payment
+      tags: [payments]
+      requestBody:
+        description: the payment
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostPaymentRequest'
+      responses:
+        '200':
+          description: Created
+  /payments/{paymentId}:
+    get: 
+      summary: get a payment by its id
+      description: get a payment by its id
+      tags: [payments]
+      parameters:
+        - in: path
+          name: paymentId
+          schema: 
+            type: number
+          required: true
+      responses:
+        '200':
+          description: Success
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/GetPaymentsResponse'  
+          
+  /payments-for-debitor/{username}:
+    get:
+      summary: get a list of payments where the user is a debitor 
+      description: get a list of payments where the user is a debitor 
+      tags: [payments]
+      parameters:
+        - in: path
+          name: username
+          schema: 
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/GetPaymentsForDebitorResponse'
+  /payments-for-creditor/{username}:
+    get:
+      summary: get a list of payments where the user is the creditor 
+      description: get a list of payments where the user is the creditor
+      tags: [payments]
+      parameters:
+        - in: path
+          name: username
+          schema: 
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/GetPaymentsForCreditorResponse'
+  /payments-for-author/{username}:
+    get:
+      summary: get a list of payments where the user is the author 
+      description: get a list of payments where the user is the author
+      tags: [payments]
+      parameters:
+        - in: path
+          name: username
+          schema: 
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/GetPaymentsForAuthorResponse'
+  /payment-overview-for-debitor/{username}:
+    get:
+      summary: get an overview of payments where the user is a debitor 
+      description: get an overview of payments where the user is a debitor 
+      tags: [payment overview]
+      parameters:
+        - in: path
+          name: username
+          schema: 
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/GetPaymentOverviewForDebitorResponse'
+  /payment-overview-for-creditor/{username}:
+    get:
+      summary: get an overview of payments where the user is the creditor 
+      description: get an overview of payments where the user is the creditor
+      tags: [payment overview]
+      parameters:
+        - in: path
+          name: username
+          schema: 
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/GetPaymentOverviewForCreditorResponse'
+  /bills:
+    get:
+      summary: get a list of bills
+      description: get a list of bills
+      tags: [bills]
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAllBillsResponse'
+  /bills-for-user/{username}:
+    get:
+      summary: get a list of bills for a user
+      description: get a list of bills for a user
+      tags: [bills]
+      parameters:
+        - in: path
+          name: username
+          description: username of the user
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAllBillsResponse'
+  /bill-overview-for-user/{username}:
+    get:
+      summary: get an overview of bills for a user
+      description: get an overview of bills for a user
+      tags: [bill overview]
+      parameters:
+        - in: path
+          name: username
+          description: username of the user
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetBillOverviewForUser'
 components:
   schemas:
-    UserResponse:
+    GetUsersResponse:
       type: object
       properties:
         userList:
           type: array
           items:
             $ref: '#/components/schemas/User'
+      required:
+        - userList
+    GetPaymentsResponse:
+      type: object
+      properties: 
+        payments:
+          type: array
+          items: 
+            $ref: '#/components/schemas/Payment'
+      required: 
+        - payments
+    PostPaymentRequest:
+      type: object
+      properties: 
+        payment:
+          $ref: '#/components/schemas/PostPayment'
+      required: 
+        - payment
+    
     User:
       type: object
       properties:
@@ -42,13 +247,252 @@ components:
           type: integer
           format: int64
           example: 1
-        email:
+        username:
           type: string
-          example: a.b@c.de
+          example: name123
         firstName:
           type: string
           example: hlaskjdha
         lastName:
           type: string
           example: lkajsdhö
+      required: 
+        - id
+        - username
+        - firstName
+        - lastName
+    Payment:
+      type: object
+      properties:
+        paymentId: 
+          type: integer
+          format: int64
+          example: 42
+          description: resource id of the payment
+        paymentDescription: 
+          type: string
+          example: 'dinner at mcDonalds'
+        paymentDate:
+          type: string
+          description: date of the payment
+          format: date-time
+          example: '2024-01-04'
+        price: 
+          type: number
+          example: 20.99
+        debitors:
+          type: array
+          example: ['name123', 'name234']
+          items: 
+            type: string
+            example: 'name123'
+        creditor:
+          type: string
+          example: 'name123'
+        author:
+          type: string
+          example: 'name123'
+        updateTime:
+          type: string
+          format: date-time
+      required:
+        - paymentId
+        - paymentDescription
+        - paymentDate
+        - price
+        - debitors
+        - creditor
+        - author
+        - updateTime
+    PostPayment:
+      type: object
+      properties:
+        paymentDescription: 
+          type: string
+          example: 'dinner at mcDonalds'
+        paymentDate:
+          type: string
+          description: date of the payment
+          format: date-time
+          example: '2024-01-04'
+        price: 
+          type: number
+          example: 20.99
+        debitors:
+          type: array
+          example: ['name234', 'name123']
+          items: 
+            type: string
+            example: 'name123'
+        creditor:
+          type: string
+          example: 'name123'
+        author:
+          type: string
+          description: username of the user who created this payment
+      required:
+        - paymentDescription
+        - paymentDate
+        - price
+        - debitors
+        - creditor
+        - author
+        
+    GetPaymentsForDebitorResponse:
+      type: object
+      properties: 
+        payments:
+          type: array
+          items: 
+            $ref: '#/components/schemas/Payment'
+      required: 
+        - payments
+    GetPaymentsForCreditorResponse:
+      type: object
+      properties: 
+        payments:
+          type: array
+          items: 
+            $ref: '#/components/schemas/Payment'
+      required: 
+        - payments
+    GetPaymentsForAuthorResponse:
+      type: object
+      properties: 
+        payments:
+          type: array
+          items: 
+            $ref: '#/components/schemas/Payment'
+      required: 
+        - payments
+        
+    GetPaymentOverviewForDebitorResponse:
+      type: object
+      properties: 
+        payments:
+          type: array
+          items: 
+            $ref: '#/components/schemas/Payment'
+        calculationTime:
+          type: string
+          description: date of the calculation
+          format: date-time
+          example: '2024-01-04'
+        totalDebitorOnly:
+          type: number
+          example: 24.42
+      required: 
+        - payments
+        - calculationTime
+        - totalDebitorOnly
+    GetPaymentOverviewForCreditorResponse:
+      type: object
+      properties: 
+        payments:
+          type: array
+          items: 
+            $ref: '#/components/schemas/Payment'
+        calculationTime:
+          type: string
+          description: date of the calculation
+          format: date-time
+          example: '2024-01-04'
+        totalWithCreditor:
+          type: number
+          example: 169.42
+        totalWithoutCreditor:
+          type: number
+          example: 159.32
+      required: 
+        - payments
+        - calculationTime
+        - totalWithCreditor
+        - totalWithoutCreditor
+        
+    GetAllBillsResponse:
+      type: object
+      properties:
+        calculationTime:
+          type: string
+          format: date-time
+          example: "2024-06-28T22:13:13.965Z"  
+        bills:
+          type: array
+          items:
+            $ref: '#/components/schemas/Bill'
+      required:
+        - bills
+        - calculationTime
+    GetBillOverviewForUser:
+      type: object
+      properties:
+        calculationTime:
+          type: string
+          format: date-time
+          example: "2024-06-28T22:13:13.965Z"  
+        bills:
+          type: array
+          items:
+            $ref: '#/components/schemas/ShortBill'
+        balance:
+          type: number
+          description: balance of the user over all bills. Positive -> you get money back. Negative -> you have to pay a lot 
+      required:
+        - bills
+        - calculationTime
       
+    Bill:
+      type: object
+      properties:
+        issuedBy:
+          type: string
+          description: receiver of the money issued with this bill
+          example: 'name123'
+        issuedFor:
+          type: string
+          description: receiver of the money issued with this bill
+          example: 'name123'
+        amount: 
+          type: number
+          description: amount of money that needs to be transfered to the receiver of the bill
+          example: 42.69
+        billComposites:
+          type: array
+          items: 
+            $ref: '#/components/schemas/BillComposite'
+      required:
+        - issuedBy
+        - issuedFor
+        - amount
+        - billComposites
+    ShortBill:
+      type: object
+      properties:
+        issuedBy:
+          type: string
+          description: receiver of the money issued with this bill
+          example: 'name123'
+        issuedFor:
+          type: string
+          description: receiver of the money issued with this bill
+          example: 'name123'
+        amount: 
+          type: number
+          description: amount of money that needs to be transfered to the receiver of the bill
+          example: 42.69
+      required:
+        - issuedBy
+        - issuedFor
+        - amount
+    BillComposite: 
+      type: object
+      properties:
+        amount:
+          type: number
+          description: portion of the payment price the user issuedFor has to pay to issuedBy 
+        payment:
+          $ref: '#/components/schemas/Payment'
+      required:
+        - amount
+        - payment
+        

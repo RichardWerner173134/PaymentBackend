@@ -1,0 +1,12 @@
+C:\3_Code\cs\PaymentBackend\PaymentBackend.Common\bin\Debug\net6.0\PaymentBackend.Common.deps.json
+C:\3_Code\cs\PaymentBackend\PaymentBackend.Common\bin\Debug\net6.0\PaymentBackend.Common.dll
+C:\3_Code\cs\PaymentBackend\PaymentBackend.Common\bin\Debug\net6.0\PaymentBackend.Common.pdb
+C:\3_Code\cs\PaymentBackend\PaymentBackend.Common\obj\Debug\net6.0\PaymentBackend.Common.csproj.AssemblyReference.cache
+C:\3_Code\cs\PaymentBackend\PaymentBackend.Common\obj\Debug\net6.0\PaymentBackend.Common.GeneratedMSBuildEditorConfig.editorconfig
+C:\3_Code\cs\PaymentBackend\PaymentBackend.Common\obj\Debug\net6.0\PaymentBackend.Common.AssemblyInfoInputs.cache
+C:\3_Code\cs\PaymentBackend\PaymentBackend.Common\obj\Debug\net6.0\PaymentBackend.Common.AssemblyInfo.cs
+C:\3_Code\cs\PaymentBackend\PaymentBackend.Common\obj\Debug\net6.0\PaymentBackend.Common.csproj.CoreCompileInputs.cache
+C:\3_Code\cs\PaymentBackend\PaymentBackend.Common\obj\Debug\net6.0\PaymentBackend.Common.dll
+C:\3_Code\cs\PaymentBackend\PaymentBackend.Common\obj\Debug\net6.0\refint\PaymentBackend.Common.dll
+C:\3_Code\cs\PaymentBackend\PaymentBackend.Common\obj\Debug\net6.0\PaymentBackend.Common.pdb
+C:\3_Code\cs\PaymentBackend\PaymentBackend.Common\obj\Debug\net6.0\ref\PaymentBackend.Common.dll

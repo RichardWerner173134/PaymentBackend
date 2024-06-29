@@ -14,11 +14,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\3_Code\\cs\\TestingApp\\Resources\\Resources.csproj",
+      "projectUniqueName": "C:\\3_Code\\cs\\PaymentBackend\\Resources\\Resources.csproj",
       "projectName": "Resources",
-      "projectPath": "C:\\3_Code\\cs\\TestingApp\\Resources\\Resources.csproj",
+      "projectPath": "C:\\3_Code\\cs\\PaymentBackend\\Resources\\Resources.csproj",
       "packagesPath": "C:\\Users\\richa\\.nuget\\packages\\",
-      "outputPath": "C:\\3_Code\\cs\\TestingApp\\Resources\\obj\\",
+      "outputPath": "C:\\3_Code\\cs\\PaymentBackend\\Resources\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

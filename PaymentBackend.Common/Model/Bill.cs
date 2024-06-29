@@ -30,7 +30,7 @@ namespace PaymentBackend.Common.Model
 
             BillComposite composite;
 
-            if (IssuedBy.Equals(creditor))
+            if (IssuedBy.ToLower().Equals(creditor.ToLower()))
             {
                 composite = new(payment, true);
             }

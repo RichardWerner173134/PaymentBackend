@@ -33,8 +33,9 @@ namespace PaymentBackend.BL.Http
 
         public Task<IActionResult> GetPaymentsForDebitor(string username)
         {
+            username = username.ToLower();
+            
             var result = _paymentsDatabaseService.SelectPaymentsByDebitor(username);
-
             var mappedPayments = result.Select(payment => new Common.Generated.Payment()
             {
                 PaymentId = payment.Id,
@@ -57,8 +58,9 @@ namespace PaymentBackend.BL.Http
 
         public Task<IActionResult> GetPaymentsForCreditor(string username)
         {
+            username = username.ToLower();
+            
             var result = _paymentsDatabaseService.SelectPaymentsByCreditor(username);
-
             var mappedPayments = result.Select(payment => new Common.Generated.Payment()
             {
                 PaymentId = payment.Id,
@@ -81,8 +83,9 @@ namespace PaymentBackend.BL.Http
 
         public Task<IActionResult> GetPaymentsForAuthor(string username)
         {
+            username = username.ToLower();
+            
             var result = _paymentsDatabaseService.SelectPaymentsByAuthor(username);
-
             var mappedPayments = result.Select(payment => new Common.Generated.Payment()
             {
                 PaymentId = payment.Id,
@@ -105,12 +108,11 @@ namespace PaymentBackend.BL.Http
 
         public Task<IActionResult> GetPaymentOverviewForDebitor(string username)
         {
+            username = username.ToLower();
+            
             DateTime calculationTime = DateTime.Now;
-
             var allPayments = _paymentsDatabaseService.SelectPaymentsByDebitor(username);
-
             PaymentOverviewForDebitor paymentOverviewForDebitor = _paymentOverviewCalculator.GetPaymentOverviewForDebitor(allPayments, username);
-
             List<Payment> mappedPayments = paymentOverviewForDebitor.Payments
                 .Select(payment => new Common.Generated.Payment()
                 {
@@ -136,12 +138,11 @@ namespace PaymentBackend.BL.Http
 
         public Task<IActionResult> GetPaymentOverviewForCreditor(string username)
         {
-            DateTime calculationTime = DateTime.Now;
-
-            var allPayments = _paymentsDatabaseService.SelectPaymentsByCreditor(username);
+            username = username.ToLower();
             
+            DateTime calculationTime = DateTime.Now;
+            var allPayments = _paymentsDatabaseService.SelectPaymentsByCreditor(username);
             PaymentOverviewForCreditor paymentOverviewForCreditor = _paymentOverviewCalculator.GetPaymentOverviewForCreditor(allPayments, username);
-
             List<Payment> mappedPayments = paymentOverviewForCreditor.Payments
                 .Select(payment => new Common.Generated.Payment()
                 {

@@ -40,7 +40,7 @@ namespace PaymentBackend.BL.Core
             decimal totalCreditorOnly = 0;
             foreach (var payment in payments)
             {
-                if (payment.Debitors.Contains(creditor))
+                if (payment.Debitors.Select(debitor => debitor.ToLower()).Contains(creditor.ToLower()))
                 {
                     totalCreditorOnly += payment.Price * ((decimal)1 / (decimal)payment.Debitors.Count);
                 }

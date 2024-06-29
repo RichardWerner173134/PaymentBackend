@@ -18,7 +18,7 @@ namespace PaymentBackend.BL.Core
             foreach (var payment in payments)
             {
                 var pairs = payment.Debitors
-                    .Where(debitor => payment.Creditor.Equals(debitor) == false)
+                    .Where(debitor => payment.Creditor.ToLower().Equals(debitor.ToLower()) == false)
                     .Select(debitor => (Creditor: payment.Creditor, Debitor: debitor))
                     .ToList();
 
@@ -26,8 +26,15 @@ namespace PaymentBackend.BL.Core
                 {
                     Bill targetBill;
 
-                    Bill? matchedByDebitor = result.Find(bill => bill.IssuedFor.Equals(pair.Debitor) && bill.IssuedBy.Equals(pair.Creditor));
-                    Bill? matchedByCreditor = result.Find(bill => bill.IssuedFor.Equals(pair.Creditor) && bill.IssuedBy.Equals(pair.Debitor));
+                    Bill? matchedByDebitor = result.Find(bill => 
+                        bill.IssuedFor.ToLower().Equals(pair.Debitor.ToLower()) 
+                        && 
+                        bill.IssuedBy.ToLower().Equals(pair.Creditor.ToLower()));
+
+                    Bill? matchedByCreditor = result.Find(bill => 
+                        bill.IssuedFor.ToLower().Equals(pair.Creditor.ToLower()) 
+                        && 
+                        bill.IssuedBy.ToLower().Equals(pair.Debitor.ToLower()));
 
                     /*
                      * creditor is the current issuer of the bill
@@ -64,7 +71,7 @@ namespace PaymentBackend.BL.Core
 
         public double GetBalanceForUser(List<Bill> bills, string username)
         {
-            return bills.Sum(bill => bill.IssuedBy.Equals(username) ? bill.Amount : -bill.Amount);
+            return bills.Sum(bill => bill.IssuedBy.ToLower().Equals(username.ToLower()) ? bill.Amount : -bill.Amount);
         }
     }
 }

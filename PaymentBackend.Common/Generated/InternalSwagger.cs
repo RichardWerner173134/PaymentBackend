@@ -348,8 +348,8 @@ namespace PaymentBackend.Common.Generated
         /// <summary>
         /// balance of the user over all bills. Positive -&gt; you get money back. Negative -&gt; you have to pay a lot
         /// </summary>
-        [Newtonsoft.Json.JsonProperty("balance", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public double? Balance { get; set; }
+        [Newtonsoft.Json.JsonProperty("balance", Required = Newtonsoft.Json.Required.Always)]
+        public double Balance { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
 

@@ -43,11 +43,13 @@ namespace PaymentBackend.BL.Http
                 CalculationTime = calculationTime
             };
 
-            return Task.FromResult<IActionResult>(new JsonResult(mappedBills));
+            return Task.FromResult<IActionResult>(new JsonResult(response));
         }
 
         public Task<IActionResult> GetAllBillsForUser(HttpRequest req, string username)
         {
+            username = username.ToLower();
+            
             DateTime calculationTime = DateTime.UtcNow;
 
             List<Common.Model.Dto.FullPaymentDto> paymentsForCreditor = _paymentDatabaseService.SelectPaymentsByCreditor(username);
@@ -71,6 +73,8 @@ namespace PaymentBackend.BL.Http
 
         public Task<IActionResult> GetBillOverviewForUser(HttpRequest req, string username)
         {
+            username = username.ToLower();
+            
             DateTime calculationTime = DateTime.UtcNow;
 
             List<Common.Model.Dto.FullPaymentDto> paymentsForCreditor = _paymentDatabaseService.SelectPaymentsByCreditor(username);
@@ -97,7 +101,7 @@ namespace PaymentBackend.BL.Http
 
         private static List<Common.Model.Bill> FilterByUsername(List<Common.Model.Bill> bills, string username) => 
             bills
-                .Where(bill => bill.IssuedBy.Equals(username) || bill.IssuedFor.Equals(username))
+                .Where(bill => bill.IssuedBy.ToLower().Equals(username.ToLower()) || bill.IssuedFor.ToLower().Equals(username.ToLower()))
                 .ToList();
     }
 }

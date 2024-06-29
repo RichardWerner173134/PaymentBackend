@@ -440,7 +440,7 @@ components:
       required:
         - bills
         - calculationTime
-      
+        - balance
     Bill:
       type: object
       properties:

@@ -108,6 +108,7 @@ namespace PaymentBackend.BL.Http
             catch (PaymentValidationException e)
             {
                 _logger.LogError($"Validation failed for payment: {e.Message}");
+                return new StatusCodeResult(StatusCodes.Status400BadRequest);
             }
 
             /*
@@ -206,6 +207,15 @@ namespace PaymentBackend.BL.Http
             if (newPayment.PaymentDate > DateTime.UtcNow)
             {
                 throw new PaymentValidationException("PaymentDate cant be in the future");
+            }
+
+            bool hasDuplicate = postPayment.Payment.Debitors
+                .GroupBy(d => d.ToLower())
+                .Any(g => g.Count() > 1);
+
+            if (hasDuplicate)
+            {
+                throw new PaymentValidationException("Each Debitor must be unique");
             }
         }
     }

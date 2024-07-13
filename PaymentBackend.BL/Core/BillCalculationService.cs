@@ -6,7 +6,7 @@ namespace PaymentBackend.BL.Core
     public interface IBillCalculationService
     {
         List<Bill> GetBills(List<FullPaymentDto> payments);
-        double GetBalanceForUser(List<Bill> bills, string username);
+        decimal GetBalanceForUser(List<Bill> bills, string issuedBy);
     }
 
     public class BillCalculationService : IBillCalculationService
@@ -62,16 +62,16 @@ namespace PaymentBackend.BL.Core
                     }
 
                     // add the payment to the matched bill
-                    targetBill.AddIncludedPayment(payment, pair.Creditor, pair.Debitor);
+                    targetBill.AddBillComposite(payment, pair.Creditor, pair.Debitor);
                 }
             }
 
             return result;
         }
 
-        public double GetBalanceForUser(List<Bill> bills, string username)
+        public decimal GetBalanceForUser(List<Bill> bills, string issuedBy)
         {
-            return bills.Sum(bill => bill.IssuedBy.ToLower().Equals(username.ToLower()) ? bill.Amount : -bill.Amount);
+            return bills.Sum(bill => bill.IssuedBy.ToLower().Equals(issuedBy.ToLower()) ? bill.Amount : -bill.Amount);
         }
     }
 }

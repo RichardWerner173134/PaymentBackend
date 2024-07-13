@@ -4,11 +4,13 @@ namespace PaymentBackend.Common.Model
 {
     public class Bill
     {
-        public string IssuedBy { get; set; }
+        private const decimal Zero = (decimal)0.0;
 
-        public string IssuedFor { get; set; }
+        public string IssuedBy { get; private set; }
 
-        public double Amount { get; private set; }
+        public string IssuedFor { get; private set; }
+
+        public decimal Amount { get; private set; }
 
         private readonly List<BillComposite> _billComposites;
 
@@ -16,11 +18,11 @@ namespace PaymentBackend.Common.Model
         {
             IssuedBy = issuedBy;
             IssuedFor = issuedFor;
-            Amount = 0.0;
-            _billComposites = new();
+            Amount = Zero;
+            _billComposites = new List<BillComposite>();
         }
 
-        public void AddIncludedPayment(FullPaymentDto payment, string creditor, string debitor)
+        public void AddBillComposite(FullPaymentDto payment, string creditor, string debitor)
         {
             bool paymentAlreadyProcessed = _billComposites.Exists(composite => composite.FullPayment.Id == payment.Id);
             if (paymentAlreadyProcessed)
@@ -30,26 +32,30 @@ namespace PaymentBackend.Common.Model
 
             BillComposite composite;
 
-            if (IssuedBy.ToLower().Equals(creditor.ToLower()))
+            if (IssuedBy.ToLower().Equals(creditor.ToLower()) && IssuedFor.ToLower().Equals(debitor.ToLower()))
             {
-                composite = new(payment, true);
+                composite = new BillComposite(payment, true);
+            }
+            else if(IssuedBy.ToLower().Equals(debitor.ToLower()) && IssuedFor.ToLower().Equals(creditor.ToLower())) 
+            {
+                composite = new BillComposite(payment, false);
             }
             else
             {
-                composite = new(payment, false);
+                throw new ArgumentException($"Invalid combination of creditor=[{creditor}] and debitor=[{debitor}]. Cant add payment to bill with IssuedBy=[{IssuedBy}] and IssuedFor=[{IssuedFor}]");
             }
 
             _billComposites.Add(composite);
 
             Amount += composite.AmountPerDebitor;
 
-            if (Amount < 0.0)
+            if (Amount < Zero)
             {
                 SwapBillDirection();
             }
         }
 
-        public List<BillComposite> GetIncludedPayments()
+        public List<BillComposite> GetBillComposites()
         {
             return _billComposites;
         }
@@ -59,7 +65,7 @@ namespace PaymentBackend.Common.Model
             // swap direction
             (IssuedBy, IssuedFor) = (IssuedFor, IssuedBy);
 
-            Amount = 0.0;
+            Amount = Zero;
             foreach (var billComposite in _billComposites)
             {
                 billComposite.InvertAmount();

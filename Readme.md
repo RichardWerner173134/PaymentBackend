@@ -34,5 +34,6 @@
 		- `get /payment-overview-for-debitor/{username}`
 - Wem schulde ich etwas? Wer schuldet mir etwas?
 	- Auflistung aller anteiligen Interaktionen zwischen mir und anderen Nutzern
+		- 
 - Wie ist meine Balance
 

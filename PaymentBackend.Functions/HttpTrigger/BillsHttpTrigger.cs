@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs;
 using System.Threading.Tasks;
-using PaymentBackend.BL.Core;
 using PaymentBackend.BL.Http;
 
 namespace PaymentBackend.Functions.HttpTrigger
@@ -24,17 +23,24 @@ namespace PaymentBackend.Functions.HttpTrigger
         }
 
         [FunctionName(nameof(GetBillsForUser))]
-        public async Task<IActionResult> GetBillsForUser([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "bills-for-user/{username}")] HttpRequest req, 
+        public async Task<IActionResult> GetBillsForUser([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "bills/all/users/{username}")] HttpRequest req, 
             string username)
         {
-            return await _resolver.GetAllBillsForUser(req, username);
+            return await _resolver.GetBillsForUser(req, username);
+        }
+
+        [FunctionName(nameof(GetBillOverviews))]
+        public async Task<IActionResult> GetBillOverviews(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "bill-overviews")] HttpRequest req)
+        {
+            return await _resolver.GetAllBillOverviews();
         }
 
         [FunctionName(nameof(GetBillOverviewForUser))]
-        public async Task<IActionResult> GetBillOverviewForUser([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "bill-overview-for-user/{username}")] HttpRequest req,
+        public async Task<IActionResult> GetBillOverviewForUser([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "bill-overviews/all/users/{username}")] HttpRequest req,
             string username)
         {
-            return await _resolver.GetBillOverviewForUser(req, username);
+            return await _resolver.GetBillOverviewsForUser(req, username);
         }
     }
 }

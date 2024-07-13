@@ -70,7 +70,7 @@ paths:
           content: 
             application/json:
               schema: 
-                $ref: '#/components/schemas/GetPaymentsResponse'  
+                $ref: '#/components/schemas/GetPaymentsByIdResponse'  
           
   /payments-for-debitor/{username}:
     get:
@@ -174,7 +174,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GetAllBillsResponse'
-  /bills-for-user/{username}:
+  /bills/all/users/{username}:
     get:
       summary: get a list of bills for a user
       description: get a list of bills for a user
@@ -192,8 +192,21 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetAllBillsResponse'
-  /bill-overview-for-user/{username}:
+                $ref: '#/components/schemas/GetBillsForUserResponse'
+                
+  /bill-overviews:
+    get:
+      summary: get an overview of bills for all users
+      description: get an overview of bills for all users
+      tags: [bill overview]
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAllBillOverviewsResponse'                
+  /bill-overviews/all/users/{username}:
     get:
       summary: get an overview of bills for a user
       description: get an overview of bills for a user
@@ -211,7 +224,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetBillOverviewForUser'
+                $ref: '#/components/schemas/GetBillOverviewsForUserResponse'
 components:
   schemas:
     GetUsersResponse:
@@ -239,6 +252,13 @@ components:
           $ref: '#/components/schemas/PostPayment'
       required: 
         - payment
+    GetPaymentsByIdResponse:
+      type: object
+      properties: 
+        payments:
+          type: array
+          items: 
+            $ref: '#/components/schemas/Payment'
     
     User:
       type: object
@@ -423,7 +443,37 @@ components:
       required:
         - bills
         - calculationTime
-    GetBillOverviewForUser:
+    GetBillsForUserResponse:
+      type: object
+      properties:
+        calculationTime:
+          type: string
+          format: date-time
+          example: "2024-06-28T22:13:13.965Z"  
+        bills:
+          type: array
+          items:
+            $ref: '#/components/schemas/Bill'
+      required:
+        - bills
+        - calculationTime
+        
+    GetAllBillOverviewsResponse:
+      type: object
+      properties:
+        calculationTime:
+          type: string
+          format: date-time
+          example: "2024-06-28T22:13:13.965Z"  
+        bills:
+          type: array
+          items:
+            $ref: '#/components/schemas/ShortBill'
+      required:
+        - bills
+        - calculationTime
+        
+    GetBillOverviewsForUserResponse:
       type: object
       properties:
         calculationTime:

@@ -1,10 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PaymentBackend.BL.Core;
-using PaymentBackend.Common.Generated;
-using PaymentBackend.Common.Model;
-using PaymentBackend.Common.Model.Dto;
 using PaymentBackend.Database.DatabaseServices;
-using User = PaymentBackend.Common.Model.User;
 
 namespace PaymentBackend.BL.Http
 {
@@ -35,8 +31,8 @@ namespace PaymentBackend.BL.Http
         {
             username = username.ToLower();
             
-            var result = _paymentsDatabaseService.SelectPaymentsByDebitor(username);
-            var mappedPayments = result.Select(payment => new Common.Generated.Payment()
+            List<Common.Model.Dto.FullPaymentDto> result = _paymentsDatabaseService.SelectPaymentsByDebitor(username);
+            List<Common.Generated.Payment> mappedPayments = result.Select(payment => new Common.Generated.Payment()
             {
                 PaymentId = payment.Id,
                 Price = decimal.ToDouble(payment.Price),
@@ -48,7 +44,7 @@ namespace PaymentBackend.BL.Http
                 PaymentDescription = payment.PaymentDescription
             }).ToList();
 
-            GetPaymentsForDebitorResponse response = new()
+            Common.Generated.GetPaymentsForDebitorResponse response = new()
             {
                 Payments = mappedPayments
             };
@@ -60,8 +56,8 @@ namespace PaymentBackend.BL.Http
         {
             username = username.ToLower();
             
-            var result = _paymentsDatabaseService.SelectPaymentsByCreditor(username);
-            var mappedPayments = result.Select(payment => new Common.Generated.Payment()
+            List<Common.Model.Dto.FullPaymentDto> result = _paymentsDatabaseService.SelectPaymentsByCreditor(username);
+            List<Common.Generated.Payment> mappedPayments = result.Select(payment => new Common.Generated.Payment()
             {
                 PaymentId = payment.Id,
                 Price = decimal.ToDouble(payment.Price),
@@ -73,7 +69,7 @@ namespace PaymentBackend.BL.Http
                 PaymentDescription = payment.PaymentDescription
             }).ToList();
 
-            GetPaymentsForDebitorResponse response = new()
+            Common.Generated.GetPaymentsForDebitorResponse response = new()
             {
                 Payments = mappedPayments
             };
@@ -85,8 +81,8 @@ namespace PaymentBackend.BL.Http
         {
             username = username.ToLower();
             
-            var result = _paymentsDatabaseService.SelectPaymentsByAuthor(username);
-            var mappedPayments = result.Select(payment => new Common.Generated.Payment()
+            List<Common.Model.Dto.FullPaymentDto> result = _paymentsDatabaseService.SelectPaymentsByAuthor(username);
+            List<Common.Generated.Payment> mappedPayments = result.Select(payment => new Common.Generated.Payment()
             {
                 PaymentId = payment.Id,
                 Price = decimal.ToDouble(payment.Price),
@@ -98,7 +94,7 @@ namespace PaymentBackend.BL.Http
                 PaymentDescription = payment.PaymentDescription
             }).ToList();
 
-            GetPaymentsForAuthorResponse response = new()
+            Common.Generated.GetPaymentsForAuthorResponse response = new()
             {
                 Payments = mappedPayments
             };
@@ -111,9 +107,9 @@ namespace PaymentBackend.BL.Http
             username = username.ToLower();
             
             DateTime calculationTime = DateTime.Now;
-            var allPayments = _paymentsDatabaseService.SelectPaymentsByDebitor(username);
-            PaymentOverviewForDebitor paymentOverviewForDebitor = _paymentOverviewCalculator.GetPaymentOverviewForDebitor(allPayments, username);
-            List<Payment> mappedPayments = paymentOverviewForDebitor.Payments
+            List<Common.Model.Dto.FullPaymentDto> allPayments = _paymentsDatabaseService.SelectPaymentsByDebitor(username);
+            Common.Model.PaymentOverviewForDebitor paymentOverviewForDebitor = _paymentOverviewCalculator.GetPaymentOverviewForDebitor(allPayments, username);
+            List<Common.Generated.Payment> mappedPayments = paymentOverviewForDebitor.Payments
                 .Select(payment => new Common.Generated.Payment()
                 {
                     PaymentId = payment.Id,
@@ -126,7 +122,7 @@ namespace PaymentBackend.BL.Http
                     PaymentDescription = payment.PaymentDescription
                 }).ToList();
 
-            GetPaymentOverviewForDebitorResponse response = new()
+            Common.Generated.GetPaymentOverviewForDebitorResponse response = new()
             {
                 Payments = mappedPayments,
                 TotalDebitorOnly = paymentOverviewForDebitor.TotalDebitorOnly,
@@ -141,9 +137,9 @@ namespace PaymentBackend.BL.Http
             username = username.ToLower();
             
             DateTime calculationTime = DateTime.Now;
-            var allPayments = _paymentsDatabaseService.SelectPaymentsByCreditor(username);
-            PaymentOverviewForCreditor paymentOverviewForCreditor = _paymentOverviewCalculator.GetPaymentOverviewForCreditor(allPayments, username);
-            List<Payment> mappedPayments = paymentOverviewForCreditor.Payments
+            List<Common.Model.Dto.FullPaymentDto> allPayments = _paymentsDatabaseService.SelectPaymentsByCreditor(username);
+            Common.Model.PaymentOverviewForCreditor paymentOverviewForCreditor = _paymentOverviewCalculator.GetPaymentOverviewForCreditor(allPayments, username);
+            List<Common.Generated.Payment> mappedPayments = paymentOverviewForCreditor.Payments
                 .Select(payment => new Common.Generated.Payment()
                 {
                     PaymentId = payment.Id,
@@ -156,7 +152,7 @@ namespace PaymentBackend.BL.Http
                     PaymentDescription = payment.PaymentDescription
                 }).ToList();
 
-            GetPaymentOverviewForCreditorResponse response = new()
+            Common.Generated.GetPaymentOverviewForCreditorResponse response = new()
             {
                 Payments = mappedPayments,
                 TotalWithCreditor = paymentOverviewForCreditor.TotalWithCreditor,

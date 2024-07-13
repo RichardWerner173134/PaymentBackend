@@ -1,7 +1,4 @@
-﻿using PaymentBackend.Common.Generated;
-using Bill = PaymentBackend.Common.Model.Bill;
-
-namespace PaymentBackend.BL.Mapper
+﻿namespace PaymentBackend.BL.Mapper
 {
     public interface IBillHttpMapper
     {
@@ -23,20 +20,20 @@ namespace PaymentBackend.BL.Mapper
             return internalBills.Select(MapBill).ToList();
         }
 
-        public List<ShortBill> MapShortBills(List<Bill> internalBills)
+        public List<Common.Generated.ShortBill> MapShortBills(List<Common.Model.Bill> internalBills)
         {
             return internalBills.Select(MapShortBill).ToList();
         }
 
         private Common.Generated.Bill MapBill(Common.Model.Bill bill)
         {
-            List<Common.Generated.BillComposite> mappedComposites = MapBillComposites(bill.GetIncludedPayments());
+            List<Common.Generated.BillComposite> mappedComposites = MapBillComposites(bill.GetBillComposites());
 
             Common.Generated.Bill result = new()
             {
                 IssuedBy = bill.IssuedBy,
                 IssuedFor = bill.IssuedFor,
-                Amount = bill.Amount,
+                Amount = Decimal.ToDouble(bill.Amount),
                 BillComposites = mappedComposites
             };
 
@@ -45,13 +42,13 @@ namespace PaymentBackend.BL.Mapper
 
         private Common.Generated.ShortBill MapShortBill(Common.Model.Bill bill)
         {
-            List<Common.Generated.BillComposite> mappedComposites = MapBillComposites(bill.GetIncludedPayments());
+            List<Common.Generated.BillComposite> mappedComposites = MapBillComposites(bill.GetBillComposites());
 
             Common.Generated.ShortBill result = new()
             {
                 IssuedBy = bill.IssuedBy,
                 IssuedFor = bill.IssuedFor,
-                Amount = bill.Amount
+                Amount = Decimal.ToDouble(bill.Amount)
             };
 
             return result;
@@ -67,7 +64,7 @@ namespace PaymentBackend.BL.Mapper
                 Common.Generated.BillComposite mappedComposite = new()
                 {
                     Payment = mappedPayment,
-                    Amount = composite.AmountPerDebitor
+                    Amount = Decimal.ToDouble(composite.AmountPerDebitor)
                 };
 
                 result.Add(mappedComposite);

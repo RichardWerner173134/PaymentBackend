@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using PaymentBackend.Common.Generated;
 using PaymentBackend.Database.DatabaseServices;
 
 namespace PaymentBackend.BL.Http
@@ -22,7 +21,7 @@ namespace PaymentBackend.BL.Http
         {
             var allUsers = _userDbService.SelectAllUsers();
 
-            var httpMappedUsers = allUsers.Select(user => new User()
+            List<Common.Generated.User> httpMappedUsers = allUsers.Select(user => new Common.Generated.User()
             {
                 Id = user.Id,
                 FirstName = user.FirstName,
@@ -30,7 +29,7 @@ namespace PaymentBackend.BL.Http
                 Username= user.Username
             }).ToList();
 
-            GetUsersResponse response = new()
+            Common.Generated.GetUsersResponse response = new()
             {
                 UserList = httpMappedUsers
             };

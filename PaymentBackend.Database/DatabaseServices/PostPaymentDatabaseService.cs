@@ -41,6 +41,7 @@ namespace PaymentBackend.Database.DatabaseServices
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex.Message);
                 transaction.Rollback();
                 throw;
             }

@@ -3,12 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using PaymentBackend.Common.Exceptions;
-using PaymentBackend.Common.Generated;
-using PaymentBackend.Common.Model.Dto;
 using PaymentBackend.Database;
 using PaymentBackend.Database.DatabaseServices;
 using PaymentBackend.Settings;
-using User = PaymentBackend.Common.Model.User;
 
 namespace PaymentBackend.BL.Http
 {
@@ -53,7 +50,7 @@ namespace PaymentBackend.BL.Http
                 PaymentDescription = payment.PaymentDescription
             }).ToList();
 
-            GetPaymentsResponse response = new()
+            Common.Generated.GetPaymentsResponse response = new()
             {
                 Payments = mappedPayments
             };
@@ -82,9 +79,9 @@ namespace PaymentBackend.BL.Http
                 PaymentDescription = resolvedPayment.PaymentDescription
             };
 
-            GetPaymentsResponse response = new()
+            Common.Generated.GetPaymentsResponse response = new()
             {
-                Payments = new List<Payment>() { mappedPayment }
+                Payments = new List<Common.Generated.Payment>() { mappedPayment }
             };
 
             return Task.FromResult<IActionResult>(new JsonResult(response));
@@ -93,7 +90,7 @@ namespace PaymentBackend.BL.Http
         public async Task<IActionResult> ProcessNewPaymentAsync(HttpRequest req)
         {
             var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            PostPaymentRequest postPayment;
+            Common.Generated.PostPaymentRequest postPayment;
             try
             {
                 postPayment = JsonConvert.DeserializeObject<Common.Generated.PostPaymentRequest>(requestBody);
@@ -104,11 +101,19 @@ namespace PaymentBackend.BL.Http
                 return new StatusCodeResult(StatusCodes.Status400BadRequest);
             }
 
+            try
+            {
+                ValidatePayment(postPayment);
+            }
+            catch (PaymentValidationException e)
+            {
+                _logger.LogError($"Validation failed for payment: {e.Message}");
+            }
+
             /*
              * Map request object into internal dto
              */
-
-            InsertPaymentDto dto;
+            Common.Model.Dto.InsertPaymentDto dto;
             try
             {
                 dto = BuildInsertPaymentDto(postPayment);
@@ -137,27 +142,28 @@ namespace PaymentBackend.BL.Http
             return new OkObjectResult(paymentId);
         }
 
-        private InsertPaymentDto BuildInsertPaymentDto(PostPaymentRequest postPayment)
+
+        private Common.Model.Dto.InsertPaymentDto BuildInsertPaymentDto(Common.Generated.PostPaymentRequest postPayment)
         {
             // resolve the author 
-            var author = _userDatabaseService.SelectUserByUsername(postPayment.Payment.Author);
+            Common.Model.User? author = _userDatabaseService.SelectUserByUsername(postPayment.Payment.Author);
             if (author == null)
             {
                 throw new UserNotFoundException($"Can´t resolve author [{postPayment.Payment.Author}].");
             }
 
             // resolve the creditor
-            var creditor = _userDatabaseService.SelectUserByUsername(postPayment.Payment.Creditor);
+            Common.Model.User? creditor = _userDatabaseService.SelectUserByUsername(postPayment.Payment.Creditor);
             if (creditor == null)
             {
                 throw new UserNotFoundException($"Can´t resolve author [{postPayment.Payment.Creditor}].");
             }
 
             // resolve all debitors
-            List<User> debitors = new();
+            List<Common.Model.User> debitors = new();
             foreach (var debitorUsername in postPayment.Payment.Debitors)
             {
-                var debitor = _userDatabaseService.SelectUserByUsername(debitorUsername);
+                Common.Model.User? debitor = _userDatabaseService.SelectUserByUsername(debitorUsername);
                 if (debitor == null)
                 {
                     throw new UserNotFoundException($"Can´t resolve a debitor [{debitorUsername}].");
@@ -166,7 +172,7 @@ namespace PaymentBackend.BL.Http
                 debitors.Add(debitor);
             }
 
-            return new InsertPaymentDto
+            return new Common.Model.Dto.InsertPaymentDto
             {
                 Author = author,
                 Creditor = creditor,
@@ -176,6 +182,31 @@ namespace PaymentBackend.BL.Http
                 UpdateTime = DateTime.UtcNow,
                 Description = postPayment.Payment.PaymentDescription
             };
+        }
+
+        private void ValidatePayment(Common.Generated.PostPaymentRequest postPayment)
+        {
+            Common.Generated.PostPayment newPayment = postPayment.Payment;
+
+            if (newPayment.Price <= 0)
+            {
+                throw new PaymentValidationException("Price must be greater than zero");
+            }
+
+            if (newPayment.Debitors.Any() == false)
+            {
+                throw new PaymentValidationException("Debitors cant be empty");
+            }
+
+            if (newPayment.Debitors.Count == 1 && newPayment.Debitors.ElementAt(0).ToLower().Equals(newPayment.Creditor.ToLower()))
+            {
+                throw new PaymentValidationException("The only debitor cant be the creditor");
+            }
+
+            if (newPayment.PaymentDate > DateTime.UtcNow)
+            {
+                throw new PaymentValidationException("PaymentDate cant be in the future");
+            }
         }
     }
 }

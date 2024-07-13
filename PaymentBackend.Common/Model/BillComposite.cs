@@ -4,14 +4,15 @@ namespace PaymentBackend.Common.Model
 {
     public class BillComposite
     {
-        public FullPaymentDto FullPayment { get; set; }
+        public FullPaymentDto FullPayment { get; private set; }
 
-        public double AmountPerDebitor { get; set; }
+        public decimal AmountPerDebitor { get; private set; }
 
+        // always use this constructor
         public BillComposite(FullPaymentDto fullPayment, bool isPositiveAmountPerDebitor)
         {
             FullPayment = fullPayment;
-            AmountPerDebitor = Decimal.ToDouble(fullPayment.Price / fullPayment.Debitors.Count);
+            AmountPerDebitor = fullPayment.Price / fullPayment.Debitors.Count;
 
             if (isPositiveAmountPerDebitor == false)
             {

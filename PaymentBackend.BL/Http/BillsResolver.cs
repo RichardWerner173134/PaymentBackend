@@ -8,10 +8,10 @@ namespace PaymentBackend.BL.Http
 {
     public interface IBillResolver
     {
-        Task<IActionResult> GetAllBills(HttpRequest req);
-        Task<IActionResult> GetBillsForUser(HttpRequest req, string username);
-        Task<IActionResult> GetBillOverviewsForUser(HttpRequest req, string username);
-        Task<IActionResult> GetAllBillOverviews();
+        Task<IActionResult> GetAllBills(long paymentContext, HttpRequest req);
+        Task<IActionResult> GetBillsForUser(long paymentContext, HttpRequest req, string username);
+        Task<IActionResult> GetBillOverviewsForUser(long paymentContext, HttpRequest req, string username);
+        Task<IActionResult> GetAllBillOverviews(long paymentContext);
     }
 
     public class BillResolver : IBillResolver
@@ -29,11 +29,11 @@ namespace PaymentBackend.BL.Http
             _httpMapper = httpMapper;
         }
 
-        public Task<IActionResult> GetAllBills(HttpRequest req)
+        public Task<IActionResult> GetAllBills(long paymentContext, HttpRequest req)
         {
             DateTime calculationTime = DateTime.Now;
 
-            List<Common.Model.Dto.FullPaymentDto> allPayments = _paymentDatabaseService.SelectAllPayments();
+            List<Common.Model.Dto.FullPaymentDto> allPayments = _paymentDatabaseService.SelectAllPayments(paymentContext);
             List<Common.Model.Bill> bills = _billCalculationService.GetBills(allPayments);
             List<Common.Generated.Bill> mappedBills = _httpMapper.MapBills(bills);
 
@@ -46,14 +46,14 @@ namespace PaymentBackend.BL.Http
             return Task.FromResult<IActionResult>(new JsonResult(response));
         }
 
-        public Task<IActionResult> GetBillsForUser(HttpRequest req, string username)
+        public Task<IActionResult> GetBillsForUser(long paymentContext, HttpRequest req, string username)
         {
             username = username.ToLower();
             
             DateTime calculationTime = DateTime.UtcNow;
 
-            List<Common.Model.Dto.FullPaymentDto> paymentsForCreditor = _paymentDatabaseService.SelectPaymentsByCreditor(username);
-            List<Common.Model.Dto.FullPaymentDto> paymentsForDebitor = _paymentDatabaseService.SelectPaymentsByDebitor(username);
+            List<Common.Model.Dto.FullPaymentDto> paymentsForCreditor = _paymentDatabaseService.SelectPaymentsByCreditor(paymentContext, username);
+            List<Common.Model.Dto.FullPaymentDto> paymentsForDebitor = _paymentDatabaseService.SelectPaymentsByDebitor(paymentContext, username);
 
             List<Common.Model.Dto.FullPaymentDto> allPayments = paymentsForCreditor.Concat(paymentsForDebitor).ToList();
 
@@ -71,11 +71,11 @@ namespace PaymentBackend.BL.Http
             return Task.FromResult<IActionResult>(new JsonResult(response));
         }
 
-        public Task<IActionResult> GetAllBillOverviews()
+        public Task<IActionResult> GetAllBillOverviews(long paymentContext)
         {
             DateTime calculationTime = DateTime.UtcNow;
 
-            List<Common.Model.Dto.FullPaymentDto> allPayments = _paymentDatabaseService.SelectAllPayments();
+            List<Common.Model.Dto.FullPaymentDto> allPayments = _paymentDatabaseService.SelectAllPayments(paymentContext);
             List<Common.Model.Bill> bills = _billCalculationService.GetBills(allPayments);
             List<Common.Generated.ShortBill> mappedBills = _httpMapper.MapShortBills(bills);
 
@@ -88,14 +88,14 @@ namespace PaymentBackend.BL.Http
             return Task.FromResult<IActionResult>(new JsonResult(response));
         }
 
-        public Task<IActionResult> GetBillOverviewsForUser(HttpRequest req, string username)
+        public Task<IActionResult> GetBillOverviewsForUser(long paymentContext, HttpRequest req, string username)
         {
             username = username.ToLower();
             
             DateTime calculationTime = DateTime.UtcNow;
 
-            List<Common.Model.Dto.FullPaymentDto> paymentsForCreditor = _paymentDatabaseService.SelectPaymentsByCreditor(username);
-            List<Common.Model.Dto.FullPaymentDto> paymentsForDebitor = _paymentDatabaseService.SelectPaymentsByDebitor(username);
+            List<Common.Model.Dto.FullPaymentDto> paymentsForCreditor = _paymentDatabaseService.SelectPaymentsByCreditor(paymentContext, username);
+            List<Common.Model.Dto.FullPaymentDto> paymentsForDebitor = _paymentDatabaseService.SelectPaymentsByDebitor(paymentContext, username);
 
             List<Common.Model.Dto.FullPaymentDto> allPayments = paymentsForCreditor.Concat(paymentsForDebitor).ToList();
 

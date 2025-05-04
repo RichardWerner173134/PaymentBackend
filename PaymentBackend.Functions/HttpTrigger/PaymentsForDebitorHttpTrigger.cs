@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 using PaymentBackend.BL.Http;
 
 namespace PaymentBackend.Functions.HttpTrigger
@@ -20,20 +19,22 @@ namespace PaymentBackend.Functions.HttpTrigger
 
         [FunctionName(nameof(GetPaymentsForDebitor))]
         public Task<IActionResult> GetPaymentsForDebitor(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "payments-for-debitor/{username}")] HttpRequest req,
-            string username,
-            ILogger log)
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "paymentContexts/{paymentContext}/payments-for-debitor/{username}")] HttpRequest req,
+            long paymentContext, 
+            string username
+        )
         {
-            return _resolver.GetPaymentsForDebitor(username);
+            return _resolver.GetPaymentsForDebitor(paymentContext, username);
         }
 
         [FunctionName(nameof(GetPaymentOverviewForDebitor))]
         public Task<IActionResult> GetPaymentOverviewForDebitor(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "payment-overview-for-debitor/{username}")] HttpRequest req,
-            string username,
-            ILogger log)
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "paymentContexts/{paymentContext}/payment-overview-for-debitor/{username}")] HttpRequest req,
+            long paymentContext,
+            string username
+        )
         {
-            return _resolver.GetPaymentOverviewForDebitor(username);
+            return _resolver.GetPaymentOverviewForDebitor(paymentContext, username);
         }
     }
 }

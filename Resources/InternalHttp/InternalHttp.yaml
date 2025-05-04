@@ -27,11 +27,29 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GetUsersResponse'
-  /payments:
+  /payment-contexts:
+    get:
+      summary: get a list of available payment contexts
+      description: get a list of available payment contexts
+      tags: [payment-context]
+      responses: 
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/GetPaymentContextsResponse'
+  /paymentContext/{paymentContext}/payments:
     get: 
       summary: get a list of payments
       description: get a list of payments
       tags: [payments]
+      parameters:
+        - in: path
+          name: paymentContext
+          schema:
+            type: string
+          required: true
       responses:
         '200':
           description: Success
@@ -43,6 +61,12 @@ paths:
       summary: post a new payment
       description: post a new payment
       tags: [payments]
+      parameters:
+        - in: path
+          name: paymentContext
+          schema:
+            type: string
+          required: true
       requestBody:
         description: the payment
         required: true
@@ -53,7 +77,7 @@ paths:
       responses:
         '200':
           description: Created
-  /payments/{paymentId}:
+  /paymentContext/{paymentContext}/payments/{paymentId}:
     get: 
       summary: get a payment by its id
       description: get a payment by its id
@@ -64,6 +88,11 @@ paths:
           schema: 
             type: number
           required: true
+        - in: path
+          name: paymentContext
+          schema:
+            type: string
+          required: true
       responses:
         '200':
           description: Success
@@ -71,8 +100,25 @@ paths:
             application/json:
               schema: 
                 $ref: '#/components/schemas/GetPaymentsByIdResponse'  
-          
-  /payments-for-debitor/{username}:
+    delete:
+      summary: invalidates a payment by its id. It wont be included in any calculations
+      description: invalidates a payment. It wont be included in any calculations
+      tags: [payments]
+      parameters:
+        - in: path
+          name: paymentId
+          schema: 
+            type: number
+          required: true
+        - in: path
+          name: paymentContext
+          schema:
+            type: string
+          required: true
+      responses:
+        '204':
+          description: Success
+  /paymentContext/{paymentContext}/payments-for-debitor/{username}:
     get:
       summary: get a list of payments where the user is a debitor 
       description: get a list of payments where the user is a debitor 
@@ -83,6 +129,11 @@ paths:
           schema: 
             type: string
           required: true
+        - in: path
+          name: paymentContext
+          schema:
+            type: string
+          required: true
       responses:
         '200':
           description: Success
@@ -90,7 +141,7 @@ paths:
             application/json:
               schema: 
                 $ref: '#/components/schemas/GetPaymentsForDebitorResponse'
-  /payments-for-creditor/{username}:
+  /paymentContext/{paymentContext}/payments-for-creditor/{username}:
     get:
       summary: get a list of payments where the user is the creditor 
       description: get a list of payments where the user is the creditor
@@ -101,6 +152,11 @@ paths:
           schema: 
             type: string
           required: true
+        - in: path
+          name: paymentContext
+          schema:
+            type: string
+          required: true
       responses:
         '200':
           description: Success
@@ -108,7 +164,7 @@ paths:
             application/json:
               schema: 
                 $ref: '#/components/schemas/GetPaymentsForCreditorResponse'
-  /payments-for-author/{username}:
+  /paymentContext/{paymentContext}/payments-for-author/{username}:
     get:
       summary: get a list of payments where the user is the author 
       description: get a list of payments where the user is the author
@@ -119,6 +175,11 @@ paths:
           schema: 
             type: string
           required: true
+        - in: path
+          name: paymentContext
+          schema:
+            type: string
+          required: true
       responses:
         '200':
           description: Success
@@ -126,7 +187,7 @@ paths:
             application/json:
               schema: 
                 $ref: '#/components/schemas/GetPaymentsForAuthorResponse'
-  /payment-overview-for-debitor/{username}:
+  /paymentContext/{paymentContext}/payment-overview-for-debitor/{username}:
     get:
       summary: get an overview of payments where the user is a debitor 
       description: get an overview of payments where the user is a debitor 
@@ -137,6 +198,11 @@ paths:
           schema: 
             type: string
           required: true
+        - in: path
+          name: paymentContext
+          schema:
+            type: string
+          required: true
       responses:
         '200':
           description: Success
@@ -144,7 +210,7 @@ paths:
             application/json:
               schema: 
                 $ref: '#/components/schemas/GetPaymentOverviewForDebitorResponse'
-  /payment-overview-for-creditor/{username}:
+  /paymentContext/{paymentContext}/payment-overview-for-creditor/{username}:
     get:
       summary: get an overview of payments where the user is the creditor 
       description: get an overview of payments where the user is the creditor
@@ -155,6 +221,11 @@ paths:
           schema: 
             type: string
           required: true
+        - in: path
+          name: paymentContext
+          schema:
+            type: string
+          required: true
       responses:
         '200':
           description: Success
@@ -162,11 +233,17 @@ paths:
             application/json:
               schema: 
                 $ref: '#/components/schemas/GetPaymentOverviewForCreditorResponse'
-  /bills:
+  /paymentContext/{paymentContext}/bills:
     get:
       summary: get a list of bills
       description: get a list of bills
       tags: [bills]
+      parameters:
+        - in: path
+          name: paymentContext
+          schema:
+            type: string
+          required: true
       responses:
         '200':
           description: Success
@@ -174,7 +251,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GetAllBillsResponse'
-  /bills/all/users/{username}:
+  /paymentContext/{paymentContext}/bills/all/users/{username}:
     get:
       summary: get a list of bills for a user
       description: get a list of bills for a user
@@ -186,6 +263,11 @@ paths:
           schema:
             type: string
           required: true
+        - in: path
+          name: paymentContext
+          schema:
+            type: string
+          required: true
       responses:
         '200':
           description: Success
@@ -194,11 +276,17 @@ paths:
               schema:
                 $ref: '#/components/schemas/GetBillsForUserResponse'
                 
-  /bill-overviews:
+  /paymentContext/{paymentContext}/bill-overviews:
     get:
       summary: get an overview of bills for all users
       description: get an overview of bills for all users
       tags: [bill overview]
+      parameters:
+        - in: path
+          name: paymentContext
+          schema:
+            type: string
+          required: true
       responses:
         '200':
           description: Success
@@ -206,7 +294,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GetAllBillOverviewsResponse'                
-  /bill-overviews/all/users/{username}:
+  /paymentContext/{paymentContext}/bill-overviews/all/users/{username}:
     get:
       summary: get an overview of bills for a user
       description: get an overview of bills for a user
@@ -215,6 +303,11 @@ paths:
         - in: path
           name: username
           description: username of the user
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: paymentContext
           schema:
             type: string
           required: true
@@ -236,6 +329,14 @@ components:
             $ref: '#/components/schemas/User'
       required:
         - userList
+    GetPaymentContextsResponse:
+      type: object
+      properties: 
+        paymentContexts:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentContext'     
+
     GetPaymentsResponse:
       type: object
       properties: 
@@ -324,6 +425,22 @@ components:
         - creditor
         - author
         - updateTime
+    PaymentContext:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 123
+        name: 
+          type: string
+          example: "Tscheschien_2024"
+        isClosed: 
+          type: boolean
+          example: true
+      required:
+        - id
+        - name
+        - isClosed
     PostPayment:
       type: object
       properties:

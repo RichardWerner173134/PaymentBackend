@@ -7,11 +7,8 @@ namespace PaymentBackend.Database
     public interface ISqlExceptionHandler
     {
         T ExecuteOrThrow<T>(Func<T> func);
-        T ExecuteOrReturn<T>(Func<T> func, T onErrorReturn);
-        void Execute(Action act, bool logOnly = false);
         void ExecuteOrThrow(Action act);
     }
-
 
     public class SqlExceptionHandler : ISqlExceptionHandler
     {
@@ -33,33 +30,6 @@ namespace PaymentBackend.Database
             {
                 _logger.LogError(ex.ToString());
                 throw;
-            }
-        }
-
-        public T ExecuteOrReturn<T>(Func<T> func, T onErrorReturn)
-        {
-            try
-            {
-                return func.Invoke();
-            }
-            catch (SqlException ex)
-            {
-                _logger.LogError(ex.ToString());
-                return onErrorReturn;
-            }
-        }
-
-        public void Execute(Action act, bool logOnly = false)
-        {
-            try
-            {
-                act.Invoke();
-            }
-            catch (SqlException ex)
-            {
-                _logger.LogError(ex.ToString());
-                if (!logOnly)
-                    throw;
             }
         }
 

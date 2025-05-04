@@ -17,9 +17,9 @@ namespace PaymentBackend.Database.DatabaseServices
         public PostPaymentDatabaseService(
             ISqlExceptionHandler exceptionHandler,
             IFunctionSettingsResolver functionSettingsResolver,
-            ILogger<PostPaymentDatabaseService> logger) : base(exceptionHandler,
-            functionSettingsResolver,
-            logger)
+            ILogger<PostPaymentDatabaseService> logger
+        ) 
+            : base(exceptionHandler, functionSettingsResolver, logger)
         {
         }
 
@@ -54,9 +54,9 @@ namespace PaymentBackend.Database.DatabaseServices
         private long InsertPayment(SqlConnection connection, SqlTransaction transaction, InsertPaymentDto paymentDto)
         {
             string sql = @"
-insert into Payments (CreditorIdFk, Price, PaymentDate, UpdateTime, Description, AuthorIdFk)
+insert into Payments (CreditorIdFk, Price, PaymentDate, UpdateTime, Description, AuthorIdFk, IsDeleted, PaymentContextIdFk)
 OUTPUT INSERTED.ID
-values (@CreditorIdFk, @Price, @PaymentDate, @UpdateTime, @Description, @AuthorIdFk)
+values (@CreditorIdFk, @Price, @PaymentDate, @UpdateTime, @Description, @AuthorIdFk, @IsDeleted, @PaymentContextIdFk)
 ";
 
             using SqlCommand cmd = new(sql, connection, transaction);
@@ -66,6 +66,8 @@ values (@CreditorIdFk, @Price, @PaymentDate, @UpdateTime, @Description, @AuthorI
             cmd.Parameters.AddWithValue("@Description", paymentDto.Description);
             cmd.Parameters.AddWithValue("@CreditorIdFk", paymentDto.Creditor.Id);
             cmd.Parameters.AddWithValue("@AuthorIdFk", paymentDto.Author.Id);
+            cmd.Parameters.AddWithValue("@IsDeleted", paymentDto.IsDeleted);
+            cmd.Parameters.AddWithValue("@PaymentContextIdFk", paymentDto.PaymentContext);
             cmd.Parameters.Add("@PaymentDate", SqlDbType.DateTime2).Value = paymentDto.PaymentDate;
             cmd.Parameters.Add("@UpdateTime", SqlDbType.DateTime2).Value = paymentDto.UpdateTime;
 

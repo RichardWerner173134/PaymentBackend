@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using PaymentBackend.Common.Exceptions;
 using PaymentBackend.Settings;
 
-
 namespace PaymentBackend.Database
 {
     public abstract class AbstractDatabaseService

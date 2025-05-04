@@ -18,23 +18,40 @@ namespace PaymentBackend.Functions.HttpTrigger
 
         [FunctionName(nameof(GetAllPayments))]
         public Task<IActionResult> GetAllPayments(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "payments")] HttpRequest req)
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "paymentContexts/{paymentContext}/payments")] HttpRequest req, 
+            long paymentContext
+        )
         {
-            return _resolver.GetPayments();
+            return _resolver.GetPayments(paymentContext);
         }
 
         [FunctionName(nameof(GetPaymentById))]
         public Task<IActionResult> GetPaymentById(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "payments/{paymentId}")] HttpRequest req,
-            long paymentId)
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "paymentContexts/{paymentContext}/payments/{paymentId}")] HttpRequest req,
+            long paymentContext,
+            long paymentId
+        )
         {
-            return _resolver.GetPaymentById(paymentId);
+            return _resolver.GetPaymentById(paymentContext, paymentId);
         }
 
         [FunctionName(nameof(PostPayment))]
-        public async Task<IActionResult> PostPayment([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "payments")] HttpRequest req)
+        public async Task<IActionResult> PostPayment(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "paymentContexts/{paymentContext}/payments")] HttpRequest req, 
+            long paymentContext
+        )
         {
-            return await _resolver.ProcessNewPaymentAsync(req);
+            return await _resolver.ProcessNewPaymentAsync(paymentContext, req);
+        }
+
+        [FunctionName(nameof(DeletePaymentById))]
+        public Task<IActionResult> DeletePaymentById(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "paymentContexts/{paymentContext}/payments/{paymentId}")] HttpRequest req, 
+            long paymentContext, 
+            long paymentId
+        )
+        {
+            return _resolver.DeletePaymentById(paymentContext, paymentId);
         }
     }
 }

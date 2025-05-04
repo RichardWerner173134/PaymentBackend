@@ -11,9 +11,10 @@ namespace PaymentBackend.BL.Http
 {
     public interface IPaymentResolver
     {
-        Task<IActionResult> GetPayments();
-        Task<IActionResult> GetPaymentById(long paymentId);
-        Task<IActionResult> ProcessNewPaymentAsync(HttpRequest req);
+        Task<IActionResult> GetPayments(long paymentContext);
+        Task<IActionResult> GetPaymentById(long paymentContext, long paymentId);
+        Task<IActionResult> ProcessNewPaymentAsync(long paymentContext, HttpRequest req);
+        Task<IActionResult> DeletePaymentById(long paymentContext, long paymentId);
     }
 
     public class PaymentResolver : AbstractDatabaseService, IPaymentResolver
@@ -21,22 +22,27 @@ namespace PaymentBackend.BL.Http
         private readonly IPaymentDatabaseService _paymentDbService;
         private readonly IUserDatabaseService _userDatabaseService;
         private readonly IPostPaymentDatabaseService _postPaymentDbService;
+        private readonly IPaymentContextDatabaseService _paymentContextDatabaseService;
 
         public PaymentResolver(IPaymentDatabaseService paymentDbService,
             IUserDatabaseService userDatabaseService,
             IPostPaymentDatabaseService postPaymentDbService,
             ISqlExceptionHandler sqlExceptionHandler,
             IFunctionSettingsResolver functionSettingsResolver,
-            ILogger<PaymentResolver> logger) : base(sqlExceptionHandler, functionSettingsResolver, logger)
+            ILogger<PaymentResolver> logger,
+            IPaymentContextDatabaseService paymentContextDatabaseService
+        ) 
+            : base(sqlExceptionHandler, functionSettingsResolver, logger)
         {
             _paymentDbService = paymentDbService;
             _userDatabaseService = userDatabaseService;
             _postPaymentDbService = postPaymentDbService;
+            _paymentContextDatabaseService = paymentContextDatabaseService;
         }
 
-        public Task<IActionResult> GetPayments()
+        public Task<IActionResult> GetPayments(long paymentContext)
         {
-            var allPayments = _paymentDbService.SelectAllPayments();
+            var allPayments = _paymentDbService.SelectAllPayments(paymentContext);
 
             var mappedPayments = allPayments.Select(payment => new Common.Generated.Payment()
             {
@@ -58,9 +64,9 @@ namespace PaymentBackend.BL.Http
             return Task.FromResult<IActionResult>(new JsonResult(response));
         }
 
-        public Task<IActionResult> GetPaymentById(long paymentId)
+        public Task<IActionResult> GetPaymentById(long paymentContext, long paymentId)
         {
-            var resolvedPayment = _paymentDbService.SelectPaymentById(paymentId);
+            var resolvedPayment = _paymentDbService.SelectPaymentById(paymentContext, paymentId);
 
             if (resolvedPayment == null)
             {
@@ -87,7 +93,7 @@ namespace PaymentBackend.BL.Http
             return Task.FromResult<IActionResult>(new JsonResult(response));
         }
 
-        public async Task<IActionResult> ProcessNewPaymentAsync(HttpRequest req)
+        public async Task<IActionResult> ProcessNewPaymentAsync(long paymentContext, HttpRequest req)
         {
             var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             Common.Generated.PostPaymentRequest postPayment;
@@ -103,7 +109,7 @@ namespace PaymentBackend.BL.Http
 
             try
             {
-                ValidatePayment(postPayment);
+                ValidatePayment(paymentContext, postPayment);
             }
             catch (PaymentValidationException e)
             {
@@ -117,11 +123,16 @@ namespace PaymentBackend.BL.Http
             Common.Model.Dto.InsertPaymentDto dto;
             try
             {
-                dto = BuildInsertPaymentDto(postPayment);
+                dto = BuildInsertPaymentDto(paymentContext, postPayment);
             }
             catch (UserNotFoundException e)
             {
                 _logger.LogError($"User not found: " + e.Message);
+                return new StatusCodeResult(StatusCodes.Status400BadRequest);
+            }
+            catch (PaymentContextNotFoundException e)
+            {
+                _logger.LogError($"PaymentContext not found: {e.Message}");
                 return new StatusCodeResult(StatusCodes.Status400BadRequest);
             }
 
@@ -143,9 +154,30 @@ namespace PaymentBackend.BL.Http
             return new OkObjectResult(paymentId);
         }
 
-
-        private Common.Model.Dto.InsertPaymentDto BuildInsertPaymentDto(Common.Generated.PostPaymentRequest postPayment)
+        public Task<IActionResult> DeletePaymentById(long paymentContext, long paymentId)
         {
+            Common.Model.Dto.FullPaymentDto? payment = _paymentDbService.SelectPaymentById(paymentContext, paymentId);
+
+            if (payment == null)
+            {
+                return Task.FromResult<IActionResult>(new NotFoundResult());
+            }
+
+            _paymentDbService.MarkPaymentAsDeleted(paymentContext, paymentId);
+
+            return Task.FromResult<IActionResult>(new NoContentResult());
+        }
+
+
+        private Common.Model.Dto.InsertPaymentDto BuildInsertPaymentDto(long paymentContext, Common.Generated.PostPaymentRequest postPayment)
+        {
+            // resolve the payment context
+            Common.Model.PaymentContext? resolvedPaymentContext = _paymentContextDatabaseService.SelectPaymentContextById(paymentContext);
+            if (resolvedPaymentContext == null)
+            {
+                throw new PaymentContextNotFoundException($"Can´t resolve PaymentContext [{paymentContext}]");
+            }
+
             // resolve the author 
             Common.Model.User? author = _userDatabaseService.SelectUserByUsername(postPayment.Payment.Author);
             if (author == null)
@@ -175,18 +207,27 @@ namespace PaymentBackend.BL.Http
 
             return new Common.Model.Dto.InsertPaymentDto
             {
+                PaymentContext = paymentContext,
                 Author = author,
                 Creditor = creditor,
                 Debitors = debitors,
                 Price = Convert.ToDecimal(postPayment.Payment.Price),
                 PaymentDate = postPayment.Payment.PaymentDate.DateTime,
                 UpdateTime = DateTime.UtcNow,
-                Description = postPayment.Payment.PaymentDescription
+                Description = postPayment.Payment.PaymentDescription,
+                IsDeleted = 0
             };
         }
 
-        private void ValidatePayment(Common.Generated.PostPaymentRequest postPayment)
+        private void ValidatePayment(long paymentContext, Common.Generated.PostPaymentRequest postPayment)
         {
+#pragma warning disable CS0472 // Das Ergebnis des Ausdrucks lautet immer gleich, da ein Wert dieses Typs niemals 'null' entspricht
+            if (paymentContext == null || paymentContext < 1)
+#pragma warning restore CS0472 // Das Ergebnis des Ausdrucks lautet immer gleich, da ein Wert dieses Typs niemals 'null' entspricht
+            {
+                throw new PaymentValidationException("PaymentContext was null");
+            }
+
             Common.Generated.PostPayment newPayment = postPayment.Payment;
 
             if (newPayment.Price <= 0)

@@ -6,12 +6,12 @@ namespace PaymentBackend.BL.Http
 {
     public interface IPaymentForUserResolver
     {
-        Task<IActionResult> GetPaymentsForDebitor(string username);
-        Task<IActionResult> GetPaymentsForCreditor(string username);
-        Task<IActionResult> GetPaymentsForAuthor(string username);
+        Task<IActionResult> GetPaymentsForDebitor(long paymentContext, string username);
+        Task<IActionResult> GetPaymentsForCreditor(long paymentContext, string username);
+        Task<IActionResult> GetPaymentsForAuthor(long paymentContext, string username);
 
-        Task<IActionResult> GetPaymentOverviewForDebitor(string username);
-        Task<IActionResult> GetPaymentOverviewForCreditor(string username);
+        Task<IActionResult> GetPaymentOverviewForDebitor(long paymentContext, string username);
+        Task<IActionResult> GetPaymentOverviewForCreditor(long paymentContext, string username);
     }
 
     public class PaymentForUserResolver : IPaymentForUserResolver
@@ -27,11 +27,11 @@ namespace PaymentBackend.BL.Http
             _paymentOverviewCalculator = paymentOverviewCalculator;
         }
 
-        public Task<IActionResult> GetPaymentsForDebitor(string username)
+        public Task<IActionResult> GetPaymentsForDebitor(long paymentContext, string username)
         {
             username = username.ToLower();
             
-            List<Common.Model.Dto.FullPaymentDto> result = _paymentsDatabaseService.SelectPaymentsByDebitor(username);
+            List<Common.Model.Dto.FullPaymentDto> result = _paymentsDatabaseService.SelectPaymentsByDebitor(paymentContext, username);
             List<Common.Generated.Payment> mappedPayments = result.Select(payment => new Common.Generated.Payment()
             {
                 PaymentId = payment.Id,
@@ -52,11 +52,11 @@ namespace PaymentBackend.BL.Http
             return Task.FromResult<IActionResult>(new JsonResult(response));
         }
 
-        public Task<IActionResult> GetPaymentsForCreditor(string username)
+        public Task<IActionResult> GetPaymentsForCreditor(long paymentContext, string username)
         {
             username = username.ToLower();
             
-            List<Common.Model.Dto.FullPaymentDto> result = _paymentsDatabaseService.SelectPaymentsByCreditor(username);
+            List<Common.Model.Dto.FullPaymentDto> result = _paymentsDatabaseService.SelectPaymentsByCreditor(paymentContext, username);
             List<Common.Generated.Payment> mappedPayments = result.Select(payment => new Common.Generated.Payment()
             {
                 PaymentId = payment.Id,
@@ -77,11 +77,11 @@ namespace PaymentBackend.BL.Http
             return Task.FromResult<IActionResult>(new JsonResult(response));
         }
 
-        public Task<IActionResult> GetPaymentsForAuthor(string username)
+        public Task<IActionResult> GetPaymentsForAuthor(long paymentContext, string username)
         {
             username = username.ToLower();
             
-            List<Common.Model.Dto.FullPaymentDto> result = _paymentsDatabaseService.SelectPaymentsByAuthor(username);
+            List<Common.Model.Dto.FullPaymentDto> result = _paymentsDatabaseService.SelectPaymentsByAuthor(paymentContext, username);
             List<Common.Generated.Payment> mappedPayments = result.Select(payment => new Common.Generated.Payment()
             {
                 PaymentId = payment.Id,
@@ -102,12 +102,12 @@ namespace PaymentBackend.BL.Http
             return Task.FromResult<IActionResult>(new JsonResult(response));
         }
 
-        public Task<IActionResult> GetPaymentOverviewForDebitor(string username)
+        public Task<IActionResult> GetPaymentOverviewForDebitor(long paymentContext, string username)
         {
             username = username.ToLower();
             
             DateTime calculationTime = DateTime.Now;
-            List<Common.Model.Dto.FullPaymentDto> allPayments = _paymentsDatabaseService.SelectPaymentsByDebitor(username);
+            List<Common.Model.Dto.FullPaymentDto> allPayments = _paymentsDatabaseService.SelectPaymentsByDebitor(paymentContext, username);
             Common.Model.PaymentOverviewForDebitor paymentOverviewForDebitor = _paymentOverviewCalculator.GetPaymentOverviewForDebitor(allPayments, username);
             List<Common.Generated.Payment> mappedPayments = paymentOverviewForDebitor.Payments
                 .Select(payment => new Common.Generated.Payment()
@@ -132,12 +132,12 @@ namespace PaymentBackend.BL.Http
             return Task.FromResult<IActionResult>(new JsonResult(response));
         }
 
-        public Task<IActionResult> GetPaymentOverviewForCreditor(string username)
+        public Task<IActionResult> GetPaymentOverviewForCreditor(long paymentContext, string username)
         {
             username = username.ToLower();
             
             DateTime calculationTime = DateTime.Now;
-            List<Common.Model.Dto.FullPaymentDto> allPayments = _paymentsDatabaseService.SelectPaymentsByCreditor(username);
+            List<Common.Model.Dto.FullPaymentDto> allPayments = _paymentsDatabaseService.SelectPaymentsByCreditor(paymentContext, username);
             Common.Model.PaymentOverviewForCreditor paymentOverviewForCreditor = _paymentOverviewCalculator.GetPaymentOverviewForCreditor(allPayments, username);
             List<Common.Generated.Payment> mappedPayments = paymentOverviewForCreditor.Payments
                 .Select(payment => new Common.Generated.Payment()

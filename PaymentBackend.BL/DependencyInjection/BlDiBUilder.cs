@@ -13,6 +13,8 @@ namespace PaymentBackend.BL.DependencyInjection
             builder.Services.AddSingleton<IUserResolver, UserResolver>();
             builder.Services.AddSingleton<IPaymentResolver, PaymentResolver>();
             builder.Services.AddSingleton<IPaymentForUserResolver, PaymentForUserResolver>();
+            builder.Services.AddSingleton<IPaymentContextResolver, PaymentContextResolver>();
+
             builder.Services.AddSingleton<IFullPaymentDto2HttpPaymentMapper, FullPaymentDto2HttpPaymentMapper>();
             builder.Services.AddSingleton<IPaymentOverviewCalculator, PaymentOverviewCalculator>();
             builder.Services.AddSingleton<IBillCalculationService, BillCalculationService>();

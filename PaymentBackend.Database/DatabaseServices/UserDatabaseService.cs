@@ -17,15 +17,14 @@ namespace PaymentBackend.Database.DatabaseServices
         public UserDatabaseService(ISqlExceptionHandler exceptionHandler,
             IFunctionSettingsResolver functionSettingsResolver, 
             ILogger<UserDatabaseService> logger
-            ) : base(exceptionHandler, 
-                functionSettingsResolver, 
-                logger)
+        ) 
+            : base(exceptionHandler, functionSettingsResolver, logger)
         {
         }
 
         public List<User> SelectAllUsers()
         {
-            return _exceptionHandler.ExecuteOrReturn(() =>
+            return _exceptionHandler.ExecuteOrThrow(() =>
             {
                 var connectionString = GetConnectionString();
                 using var connection = new SqlConnection(connectionString);
@@ -35,7 +34,7 @@ namespace PaymentBackend.Database.DatabaseServices
                 
                 connection.Close();
                 return result;
-            }, new List<User>());
+            });
         }
 
         public User? SelectUserByUsername(string username)

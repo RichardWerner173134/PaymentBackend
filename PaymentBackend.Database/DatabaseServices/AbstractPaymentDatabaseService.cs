@@ -11,13 +11,13 @@ namespace PaymentBackend.Database.DatabaseServices
         protected AbstractPaymentDatabaseService(
             ISqlExceptionHandler exceptionHandler,
             IFunctionSettingsResolver functionSettingsResolver,
-            ILogger logger) : base(exceptionHandler,
-            functionSettingsResolver,
-            logger)
+            ILogger logger
+        ) 
+            : base(exceptionHandler, functionSettingsResolver, logger)
         {
         }
 
-        protected List<JoinedPayment2DebitorDto> SelectAllPayment2Debitors(SqlConnection connection)
+        protected List<JoinedPayment2DebitorDto> SelectAllPayment2Debitors(SqlConnection connection, long paymentContext)
         {
             string sql = @"
 select 
@@ -43,12 +43,17 @@ join PaymentUsers v
 	on p.CreditorIdFk = v.Id
 join PaymentUsers w
 	on p.AuthorIdFk = w.Id
+where 
+    p.IsDeleted = 0
+	and p.PaymentContextIdFk = @PaymentContextIdFk
 order by 
     p.PaymentDate asc
 ";
 
             using SqlCommand cmd1 = new(sql, connection);
             cmd1.CommandType = CommandType.Text;
+
+            cmd1.Parameters.AddWithValue("@PaymentContextIdFk", paymentContext);
 
             List<JoinedPayment2DebitorDto> result = new();
 
@@ -62,7 +67,7 @@ order by
             return result;
         }
 
-        protected List<JoinedPayment2DebitorDto> SelectPaymentById(SqlConnection connection, long id)
+        protected List<JoinedPayment2DebitorDto> SelectPaymentById(SqlConnection connection, long paymentContext, long id)
         {
             string sql = @"
 with p2d as (
@@ -96,6 +101,9 @@ join PaymentUsers v
 	on p.CreditorIdFk = v.Id
 join PaymentUsers w
 	on p.AuthorIdFk = w.Id
+where
+    p.IsDeleted = 0
+	and p.PaymentContextIdFk = @PaymentContextIdFk
 order by 
     p.PaymentDate asc
 ";
@@ -103,6 +111,7 @@ order by
             using SqlCommand cmd = new(sql, connection);
             cmd.CommandType = CommandType.Text;
             cmd.Parameters.AddWithValue("@PaymentId", id);
+            cmd.Parameters.AddWithValue("@PaymentContextIdFk", paymentContext);
 
             List<JoinedPayment2DebitorDto> result = new();
 
@@ -116,7 +125,7 @@ order by
             return result;
         }
 
-        protected List<JoinedPayment2DebitorDto> SelectPaymentsByCreditor(SqlConnection connection, string username)
+        protected List<JoinedPayment2DebitorDto> SelectPaymentsByCreditor(SqlConnection connection, long paymentContext, string username)
         {
             string sql = @"
 with c as (
@@ -150,6 +159,9 @@ join PaymentUsers d
 	on p2d.DebitorIdFk = d.Id 
 join PaymentUsers a
 	on p.AuthorIdFk = a.Id
+where 
+    p.IsDeleted = 0
+	and p.PaymentContextIdFk = @PaymentContextIdFk
 order by 
     p.PaymentDate asc
 ";
@@ -157,6 +169,7 @@ order by
             using SqlCommand cmd = new(sql, connection);
             cmd.CommandType = CommandType.Text;
             cmd.Parameters.AddWithValue("@Username", username);
+            cmd.Parameters.AddWithValue("@PaymentContextIdFk", paymentContext);
 
             List<JoinedPayment2DebitorDto> result = new();
 
@@ -170,7 +183,7 @@ order by
             return result;
         }
 
-        protected List<JoinedPayment2DebitorDto> SelectPaymentsByDebitor(SqlConnection connection, string username)
+        protected List<JoinedPayment2DebitorDto> SelectPaymentsByDebitor(SqlConnection connection, long paymentContext, string username)
         {
             string sql = @"
 with d as (
@@ -214,6 +227,9 @@ join PaymentUsers a
 	on p.AuthorIdFk = a.Id
 join PaymentUsers allDebitors
 	on allDebitors.Id = p2d.DebitorIdFk
+where
+    p.IsDeleted = 0
+	and p.PaymentContextIdFk = @PaymentContextIdFk
 order by 
     p.PaymentDate asc
 ";
@@ -221,6 +237,7 @@ order by
             using SqlCommand cmd = new(sql, connection);
             cmd.CommandType = CommandType.Text;
             cmd.Parameters.AddWithValue("@Username", username);
+            cmd.Parameters.AddWithValue("@PaymentContextIdFk", paymentContext);
 
             List<JoinedPayment2DebitorDto> result = new();
 
@@ -234,7 +251,7 @@ order by
             return result;
         }
 
-        protected List<JoinedPayment2DebitorDto> SelectPaymentsByAuthor(SqlConnection connection, string username)
+        protected List<JoinedPayment2DebitorDto> SelectPaymentsByAuthor(SqlConnection connection, long paymentContext, string username)
         {
             string sql = @"
 with a as (
@@ -261,13 +278,16 @@ select
 from
 	a
 join Payments p 
-	on p.CreditorIdFk = a.Id
+	on p.AuthorIdFk = a.Id
 join Payment2Debitor p2d
 	on p2d.PaymentIdFk = p.Id
 join PaymentUsers d
 	on p2d.DebitorIdFk = d.Id 
 join PaymentUsers c
 	on p.CreditorIdFk = c.Id
+where
+    p.IsDeleted = 0
+	and p.PaymentContextIdFk = @PaymentContextIdFk
 order by 
     p.PaymentDate asc
 ";
@@ -275,6 +295,7 @@ order by
             using SqlCommand cmd = new(sql, connection);
             cmd.CommandType = CommandType.Text;
             cmd.Parameters.AddWithValue("@Username", username);
+            cmd.Parameters.AddWithValue("@PaymentContextIdFk", paymentContext);
 
             List<JoinedPayment2DebitorDto> result = new();
 
@@ -286,6 +307,26 @@ order by
             }
 
             return result;
+        }
+
+        protected long MarkPaymentAsDeleted(SqlConnection connection, long paymentContext, long paymentId)
+        {
+            string sql = @"
+update
+    Payments
+set
+    IsDeleted = 1
+where
+    Id = @Id
+	and PaymentContextIdFk = @PaymentContextIdFk
+";
+
+            using SqlCommand cmd = new(sql, connection);
+            cmd.CommandType = CommandType.Text;
+            cmd.Parameters.AddWithValue("@Id", paymentId);
+            cmd.Parameters.AddWithValue("@PaymentContextIdFk", paymentContext);
+
+            return cmd.ExecuteNonQuery();
         }
 
         protected List<FullPaymentDto> MergeJoinedPayments(List<JoinedPayment2DebitorDto> joinedPayments)

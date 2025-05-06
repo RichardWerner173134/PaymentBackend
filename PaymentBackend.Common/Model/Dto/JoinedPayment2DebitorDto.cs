@@ -23,5 +23,7 @@
         public DateTime PaymentUpdateTime { get; set; }
 
         public string? PaymentDescription { get; set; }
+
+        public bool PaymentContextIsClosed { get; set; }
     }
 }

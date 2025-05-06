@@ -17,5 +17,7 @@
         public DateTime UpdateTime { get; set; }
 
         public string? PaymentDescription { get; set; }
+
+        public required bool PaymentContextIsClosed { get; set; }
     }
 }

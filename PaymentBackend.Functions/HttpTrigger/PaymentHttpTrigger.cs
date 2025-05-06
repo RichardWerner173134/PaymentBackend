@@ -1,9 +1,7 @@
 ﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Azure.WebJobs;
 using PaymentBackend.BL.Http;
+using Microsoft.Azure.Functions.Worker.Http;
+using Microsoft.Azure.Functions.Worker;
 
 namespace PaymentBackend.Functions.HttpTrigger
 {
@@ -16,42 +14,42 @@ namespace PaymentBackend.Functions.HttpTrigger
             _resolver = resolver;
         }
 
-        [FunctionName(nameof(GetAllPayments))]
-        public Task<IActionResult> GetAllPayments(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "paymentContexts/{paymentContext}/payments")] HttpRequest req, 
+        [Function(nameof(GetAllPayments))]
+        public Task<HttpResponseData> GetAllPayments(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "paymentContexts/{paymentContext}/payments")] HttpRequestData req, 
             long paymentContext
         )
         {
-            return _resolver.GetPayments(paymentContext);
+            return _resolver.GetPayments(req, paymentContext);
         }
 
-        [FunctionName(nameof(GetPaymentById))]
-        public Task<IActionResult> GetPaymentById(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "paymentContexts/{paymentContext}/payments/{paymentId}")] HttpRequest req,
+        [Function(nameof(GetPaymentById))]
+        public Task<HttpResponseData> GetPaymentById(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "paymentContexts/{paymentContext}/payments/{paymentId}")] HttpRequestData req,
             long paymentContext,
             long paymentId
         )
         {
-            return _resolver.GetPaymentById(paymentContext, paymentId);
+            return _resolver.GetPaymentById(req, paymentContext, paymentId);
         }
 
-        [FunctionName(nameof(PostPayment))]
-        public async Task<IActionResult> PostPayment(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "paymentContexts/{paymentContext}/payments")] HttpRequest req, 
+        [Function(nameof(PostPayment))]
+        public async Task<HttpResponseData> PostPayment(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "paymentContexts/{paymentContext}/payments")] HttpRequestData req, 
             long paymentContext
         )
         {
-            return await _resolver.ProcessNewPaymentAsync(paymentContext, req);
+            return await _resolver.ProcessNewPaymentAsync(req, paymentContext);
         }
 
-        [FunctionName(nameof(DeletePaymentById))]
-        public Task<IActionResult> DeletePaymentById(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "paymentContexts/{paymentContext}/payments/{paymentId}")] HttpRequest req, 
+        [Function(nameof(DeletePaymentById))]
+        public Task<HttpResponseData> DeletePaymentById(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "paymentContexts/{paymentContext}/payments/{paymentId}")] HttpRequestData req, 
             long paymentContext, 
             long paymentId
         )
         {
-            return _resolver.DeletePaymentById(paymentContext, paymentId);
+            return _resolver.DeletePaymentById(req, paymentContext, paymentId);
         }
     }
 }

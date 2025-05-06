@@ -1,14 +1,12 @@
-﻿using Microsoft.Azure.Functions.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 
 namespace PaymentBackend.Settings.DependencyInjection
 {
     public class SettingsDiBuilder
     {
-        public void Configure(IFunctionsHostBuilder builder)
+        public void Configure(IServiceCollection serviceCollection)
         {
-            builder.Services.AddSingleton<IFunctionSettingsResolver, FunctionSettingsResolver>();
-
+            serviceCollection.AddSingleton<IFunctionSettingsResolver, FunctionSettingsResolver>();
         }
     }
 }

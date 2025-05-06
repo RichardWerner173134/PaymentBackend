@@ -1,20 +1,20 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.Azure.Functions.Worker.Http;
 using PaymentBackend.BL.Core;
 using PaymentBackend.BL.Mapper;
 using PaymentBackend.Database.DatabaseServices;
+using System.Net;
 
 namespace PaymentBackend.BL.Http
 {
     public interface IBillResolver
     {
-        Task<IActionResult> GetAllBills(long paymentContext, HttpRequest req);
-        Task<IActionResult> GetBillsForUser(long paymentContext, HttpRequest req, string username);
-        Task<IActionResult> GetBillOverviewsForUser(long paymentContext, HttpRequest req, string username);
-        Task<IActionResult> GetAllBillOverviews(long paymentContext);
+        Task<HttpResponseData> GetAllBills(HttpRequestData req, long paymentContext);
+        Task<HttpResponseData> GetBillsForUser(HttpRequestData req, long paymentContext, string username);
+        Task<HttpResponseData> GetBillOverviewsForUser(HttpRequestData req, long paymentContext, string username);
+        Task<HttpResponseData> GetAllBillOverviews(HttpRequestData req, long paymentContext);
     }
 
-    public class BillResolver : IBillResolver
+    public class BillResolver : AbstractHttpResolver, IBillResolver
     {
         private readonly IBillCalculationService _billCalculationService;
         private readonly IPaymentDatabaseService _paymentDatabaseService;
@@ -29,7 +29,7 @@ namespace PaymentBackend.BL.Http
             _httpMapper = httpMapper;
         }
 
-        public Task<IActionResult> GetAllBills(long paymentContext, HttpRequest req)
+        public async Task<HttpResponseData> GetAllBills(HttpRequestData req, long paymentContext)
         {
             DateTime calculationTime = DateTime.Now;
 
@@ -43,10 +43,10 @@ namespace PaymentBackend.BL.Http
                 CalculationTime = calculationTime
             };
 
-            return Task.FromResult<IActionResult>(new JsonResult(response));
+            return await BuildOkResponse(req, response);
         }
 
-        public Task<IActionResult> GetBillsForUser(long paymentContext, HttpRequest req, string username)
+        public async Task<HttpResponseData> GetBillsForUser(HttpRequestData req, long paymentContext, string username)
         {
             username = username.ToLower();
             
@@ -68,10 +68,10 @@ namespace PaymentBackend.BL.Http
                 CalculationTime = calculationTime
             };
 
-            return Task.FromResult<IActionResult>(new JsonResult(response));
+            return await BuildOkResponse(req, response);
         }
 
-        public Task<IActionResult> GetAllBillOverviews(long paymentContext)
+        public async Task<HttpResponseData> GetAllBillOverviews(HttpRequestData req, long paymentContext)
         {
             DateTime calculationTime = DateTime.UtcNow;
 
@@ -85,10 +85,10 @@ namespace PaymentBackend.BL.Http
                 CalculationTime = calculationTime
             };
 
-            return Task.FromResult<IActionResult>(new JsonResult(response));
+            return await BuildOkResponse(req, response);
         }
 
-        public Task<IActionResult> GetBillOverviewsForUser(long paymentContext, HttpRequest req, string username)
+        public async Task<HttpResponseData> GetBillOverviewsForUser(HttpRequestData req, long paymentContext, string username)
         {
             username = username.ToLower();
             
@@ -111,9 +111,8 @@ namespace PaymentBackend.BL.Http
                 Balance = Decimal.ToDouble(balance),
                 CalculationTime = calculationTime
             };
-            
 
-            return Task.FromResult<IActionResult>(new JsonResult(response));
+            return await BuildOkResponse(req, response);
         }
 
         private static List<Common.Model.Bill> FilterByUsername(List<Common.Model.Bill> bills, string username) => 

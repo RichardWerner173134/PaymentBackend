@@ -1,9 +1,7 @@
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.AspNetCore.Http;
 using PaymentBackend.BL.Http;
+using Microsoft.Azure.Functions.Worker.Http;
+using Microsoft.Azure.Functions.Worker;
 
 namespace PaymentBackend.Functions.HttpTrigger
 {
@@ -17,14 +15,14 @@ namespace PaymentBackend.Functions.HttpTrigger
         }
 
 
-        [FunctionName(nameof(GetPaymentsForAuthor))]
-        public async Task<IActionResult> GetPaymentsForAuthor(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "paymentContexts/{paymentContext}/payments-for-author/{username}")] HttpRequest req,
+        [Function(nameof(GetPaymentsForAuthor))]
+        public async Task<HttpResponseData> GetPaymentsForAuthor(
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "paymentContexts/{paymentContext}/payments-for-author/{username}")] HttpRequestData req,
             long paymentContext,
             string username
         )
         {
-            return await _resolver.GetPaymentsForAuthor(paymentContext, username);
+            return await _resolver.GetPaymentsForAuthor(req, paymentContext, username);
         }
     }
 }

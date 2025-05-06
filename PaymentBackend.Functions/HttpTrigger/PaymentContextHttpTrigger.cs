@@ -1,10 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using PaymentBackend.BL.Http;
 using System.Threading.Tasks;
+using Microsoft.Azure.Functions.Worker.Http;
+using Microsoft.Azure.Functions.Worker;
 
 namespace PaymentBackend.Functions.HttpTrigger
 {
@@ -19,9 +17,9 @@ namespace PaymentBackend.Functions.HttpTrigger
             _paymentContextResolver = paymentContextResolver;
         }
 
-        [FunctionName(nameof(GetPaymentContexts))]
-        public async Task<IActionResult> GetPaymentContexts(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "paymentContexts")] HttpRequest req,
+        [Function(nameof(GetPaymentContexts))]
+        public async Task<HttpResponseData> GetPaymentContexts(
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "paymentContexts")] HttpRequestData req,
             ILogger log)
         {
             return await _paymentContextResolver.GetPaymentContexts(req);

@@ -1,15 +1,14 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.Azure.Functions.Worker.Http;
 using PaymentBackend.Database.DatabaseServices;
 
 namespace PaymentBackend.BL.Http
 {
     public interface IPaymentContextResolver
     {
-        Task<IActionResult> GetPaymentContexts(HttpRequest req);
+        Task<HttpResponseData> GetPaymentContexts(HttpRequestData req);
     }
 
-    public class PaymentContextResolver : IPaymentContextResolver
+    public class PaymentContextResolver : AbstractHttpResolver, IPaymentContextResolver
     {
         private readonly IPaymentContextDatabaseService _paymentContextDatabaseService;
 
@@ -20,7 +19,7 @@ namespace PaymentBackend.BL.Http
             _paymentContextDatabaseService = paymentContextDatabaseService;
         }
 
-        public async Task<IActionResult> GetPaymentContexts(HttpRequest req)
+        public async Task<HttpResponseData> GetPaymentContexts(HttpRequestData req)
         {
             List<Common.Model.PaymentContext> result = _paymentContextDatabaseService.SelectAllPaymentContexts();
 
@@ -39,7 +38,7 @@ namespace PaymentBackend.BL.Http
                 PaymentContexts = mappedResults
             };
 
-            return await Task.FromResult<IActionResult>(new JsonResult(response));
+            return await BuildOkResponse(req, response);
         }
     }
 }

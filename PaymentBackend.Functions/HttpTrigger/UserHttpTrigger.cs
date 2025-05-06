@@ -1,9 +1,8 @@
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
+using Microsoft.Azure.Functions.Worker;
+using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 using PaymentBackend.BL.Http;
+using System.Threading.Tasks;
 
 namespace PaymentBackend.Functions.HttpTrigger
 {
@@ -19,11 +18,11 @@ namespace PaymentBackend.Functions.HttpTrigger
             _resolver = resolver;
         }
 
-        [FunctionName(nameof(GetAllUsers))]
-        public IActionResult GetAllUsers(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "users")] HttpRequest req)
+        [Function(nameof(GetAllUsers))]
+        public Task<HttpResponseData> GetAllUsers(
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "users")] HttpRequestData req)
         {
-            return _resolver.GetPaymentUsers();
+            return _resolver.GetPaymentUsers(req);
         }
     }
 }

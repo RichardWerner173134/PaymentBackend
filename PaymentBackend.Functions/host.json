@@ -9,8 +9,6 @@
         "enableLiveMetricsFilters": true
       },
       "logLevel": {
-        "Function.GetAllUsers": "Information",
-        "Function.GetAllPayments": "Information",
         "Function": "Information",
         "default": "Warning"
       }

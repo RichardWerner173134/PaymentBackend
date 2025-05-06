@@ -3,6 +3,7 @@ using PaymentBackend.Common.Model.Dto;
 using PaymentBackend.Settings;
 using System.Data.SqlClient;
 using System.Data;
+using System.Diagnostics;
 
 namespace PaymentBackend.Database.DatabaseServices
 {
@@ -32,7 +33,8 @@ select
     v.Id as UCreditorId,
 	v.Username as UCreditorUsername,
     w.Id as UAuthorId,
-	w.Username as UAuthorUsername
+	w.Username as UAuthorUsername,
+    ctx.IsClosed as CtxIsClosed
 from 
 	Payment2Debitor p2d
 join Payments p 
@@ -43,6 +45,8 @@ join PaymentUsers v
 	on p.CreditorIdFk = v.Id
 join PaymentUsers w
 	on p.AuthorIdFk = w.Id
+join PaymentContext ctx
+    on ctx.Id = p.PaymentContextIdFk
 where 
     p.IsDeleted = 0
 	and p.PaymentContextIdFk = @PaymentContextIdFk
@@ -90,7 +94,8 @@ select
     v.Id as UCreditorId,
 	v.Username as UCreditorUsername,
     w.Id as UAuthorId,
-	w.Username as UAuthorUsername
+	w.Username as UAuthorUsername,
+    ctx.IsClosed as CtxIsClosed
 from 
     p2d
 join Payments p 
@@ -101,6 +106,8 @@ join PaymentUsers v
 	on p.CreditorIdFk = v.Id
 join PaymentUsers w
 	on p.AuthorIdFk = w.Id
+join PaymentContext ctx
+    on ctx.Id = p.PaymentContextIdFk
 where
     p.IsDeleted = 0
 	and p.PaymentContextIdFk = @PaymentContextIdFk
@@ -148,7 +155,8 @@ select
     c.Id as UCreditorId,
 	c.Username as UCreditorUsername,
     a.Id as UAuthorId,
-	a.Username as UAuthorUsername
+	a.Username as UAuthorUsername,
+    ctx.IsClosed as CtxIsClosed
 from
 	c
 join Payments p 
@@ -159,6 +167,8 @@ join PaymentUsers d
 	on p2d.DebitorIdFk = d.Id 
 join PaymentUsers a
 	on p.AuthorIdFk = a.Id
+join PaymentContext ctx
+    on ctx.Id = p.PaymentContextIdFk
 where 
     p.IsDeleted = 0
 	and p.PaymentContextIdFk = @PaymentContextIdFk
@@ -214,7 +224,8 @@ select
     c.Id as UCreditorId,
 	c.Username as UCreditorUsername,
     a.Id as UAuthorId,
-	a.Username as UAuthorUsername
+	a.Username as UAuthorUsername,
+    ctx.IsClosed as CtxIsClosed
 from 
 	paymentIds
 join Payments p
@@ -227,6 +238,8 @@ join PaymentUsers a
 	on p.AuthorIdFk = a.Id
 join PaymentUsers allDebitors
 	on allDebitors.Id = p2d.DebitorIdFk
+join PaymentContext ctx
+    on ctx.Id = p.PaymentContextIdFk
 where
     p.IsDeleted = 0
 	and p.PaymentContextIdFk = @PaymentContextIdFk
@@ -274,7 +287,8 @@ select
     c.Id as UCreditorId,
 	c.Username as UCreditorUsername,
     a.Id as UAuthorId,
-	a.Username as UAuthorUsername
+	a.Username as UAuthorUsername,
+    ctx.IsClosed as CtxIsClosed
 from
 	a
 join Payments p 
@@ -285,6 +299,8 @@ join PaymentUsers d
 	on p2d.DebitorIdFk = d.Id 
 join PaymentUsers c
 	on p.CreditorIdFk = c.Id
+join PaymentContext ctx
+    on ctx.Id = p.PaymentContextIdFk
 where
     p.IsDeleted = 0
 	and p.PaymentContextIdFk = @PaymentContextIdFk
@@ -333,6 +349,7 @@ where
         {
             List<FullPaymentDto> result = new();
 
+            bool? firstIsClosedValue = null;
             foreach (var p2d in joinedPayments)
             {
                 var match = result.Find(payment => payment.Id == p2d.PaymentId);
@@ -348,13 +365,20 @@ where
                         Price = p2d.Price,
                         PaymentDate = p2d.PaymentDate,
                         PaymentDescription = p2d.PaymentDescription,
-                        UpdateTime = p2d.PaymentUpdateTime
+                        UpdateTime = p2d.PaymentUpdateTime,
+
+                        PaymentContextIsClosed = p2d.PaymentContextIsClosed
                     };
 
                     result.Add(newPaymentDto);
                 }
                 else
                 {
+                    if (match.PaymentContextIsClosed != p2d.PaymentContextIsClosed)
+                    {
+                        throw new UnreachableException("Payments with different context detected.");
+                    }
+
                     match.Debitors.Add(p2d.DebitorUsername);
                 }
             }
@@ -382,6 +406,8 @@ where
             var paymentUpdateTime = reader.SafeGetDateTime("PUpdateTime");
             var paymentDescription = reader.SafeGetString("PDescription");
 
+            var contextIsClosed= reader.SafeGetInt16("CtxIsClosed");
+
             return new JoinedPayment2DebitorDto()
             {
                 PaymentId = paymentId!.Value,
@@ -400,7 +426,9 @@ where
                 Price = price!.Value,
                 PaymentDate = paymentDate!.Value,
                 PaymentUpdateTime = paymentUpdateTime!.Value,
-                PaymentDescription = paymentDescription
+                PaymentDescription = paymentDescription,
+
+                PaymentContextIsClosed = contextIsClosed is 1
             };
         }
     }

@@ -1,9 +1,7 @@
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.AspNetCore.Http;
 using PaymentBackend.BL.Http;
+using Microsoft.Azure.Functions.Worker.Http;
+using Microsoft.Azure.Functions.Worker;
 
 namespace PaymentBackend.Functions.HttpTrigger
 {
@@ -17,24 +15,24 @@ namespace PaymentBackend.Functions.HttpTrigger
         }
 
 
-        [FunctionName(nameof(GetPaymentsForDebitor))]
-        public Task<IActionResult> GetPaymentsForDebitor(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "paymentContexts/{paymentContext}/payments-for-debitor/{username}")] HttpRequest req,
+        [Function(nameof(GetPaymentsForDebitor))]
+        public Task<HttpResponseData> GetPaymentsForDebitor(
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "paymentContexts/{paymentContext}/payments-for-debitor/{username}")] HttpRequestData req,
             long paymentContext, 
             string username
         )
         {
-            return _resolver.GetPaymentsForDebitor(paymentContext, username);
+            return _resolver.GetPaymentsForDebitor(req, paymentContext, username);
         }
 
-        [FunctionName(nameof(GetPaymentOverviewForDebitor))]
-        public Task<IActionResult> GetPaymentOverviewForDebitor(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "paymentContexts/{paymentContext}/payment-overview-for-debitor/{username}")] HttpRequest req,
+        [Function(nameof(GetPaymentOverviewForDebitor))]
+        public Task<HttpResponseData> GetPaymentOverviewForDebitor(
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "paymentContexts/{paymentContext}/payment-overview-for-debitor/{username}")] HttpRequestData req,
             long paymentContext,
             string username
         )
         {
-            return _resolver.GetPaymentOverviewForDebitor(paymentContext, username);
+            return _resolver.GetPaymentOverviewForDebitor(req, paymentContext, username);
         }
     }
 }

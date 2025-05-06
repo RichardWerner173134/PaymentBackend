@@ -43,11 +43,13 @@ create table PaymentContext(
 );
 
 alter table Payments
-	add PaymentContextIdFk	bigint null,
-	constraint PaymentContextIdFk references PaymentContext(Id);
+	add PaymentContextIdFk	bigint null;
+
+alter table Payments
+	add constraint PaymentContextIdFk foreign key (PaymentContextIdFk) references PaymentContext(Id);
 
 -- update Payments set PaymentContextIdFk = 0 -- tscheschien
 -- update Payments set PaymentContextIdFk = 1 -- österreich
 
 alter table Payments
-	alter column PaymentContextIdFk bigint null;
+	alter column PaymentContextIdFk bigint not null;

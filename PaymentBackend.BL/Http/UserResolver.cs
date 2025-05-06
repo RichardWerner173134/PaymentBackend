@@ -1,14 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.Azure.Functions.Worker.Http;
 using PaymentBackend.Database.DatabaseServices;
 
 namespace PaymentBackend.BL.Http
 {
     public interface IUserResolver
     {
-        IActionResult GetPaymentUsers();
+        Task<HttpResponseData> GetPaymentUsers(HttpRequestData req);
     }
 
-    public class UserResolver : IUserResolver
+    public class UserResolver : AbstractHttpResolver, IUserResolver
     {
         private readonly IUserDatabaseService _userDbService;
 
@@ -17,7 +17,7 @@ namespace PaymentBackend.BL.Http
             _userDbService = userDbService;
         }
 
-        public IActionResult GetPaymentUsers()
+        public async Task<HttpResponseData> GetPaymentUsers(HttpRequestData req)
         {
             var allUsers = _userDbService.SelectAllUsers();
 
@@ -34,7 +34,7 @@ namespace PaymentBackend.BL.Http
                 UserList = httpMappedUsers
             };
 
-            return new JsonResult(response);
+            return await BuildOkResponse(req, response);
         }
     }
 }

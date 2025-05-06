@@ -1,28 +1,28 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using PaymentBackend.Common.Exceptions;
 using PaymentBackend.Database;
 using PaymentBackend.Database.DatabaseServices;
 using PaymentBackend.Settings;
+using Newtonsoft.Json;
 
 namespace PaymentBackend.BL.Http
 {
     public interface IPaymentResolver
     {
-        Task<IActionResult> GetPayments(long paymentContext);
-        Task<IActionResult> GetPaymentById(long paymentContext, long paymentId);
-        Task<IActionResult> ProcessNewPaymentAsync(long paymentContext, HttpRequest req);
-        Task<IActionResult> DeletePaymentById(long paymentContext, long paymentId);
+        Task<HttpResponseData> GetPayments(HttpRequestData req, long paymentContext);
+        Task<HttpResponseData> GetPaymentById(HttpRequestData req, long paymentContext, long paymentId);
+        Task<HttpResponseData> ProcessNewPaymentAsync(HttpRequestData req, long paymentContext);
+        Task<HttpResponseData> DeletePaymentById(HttpRequestData req, long paymentContext, long paymentId);
     }
 
-    public class PaymentResolver : AbstractDatabaseService, IPaymentResolver
+    public class PaymentResolver : AbstractHttpResolver, IPaymentResolver
     {
         private readonly IPaymentDatabaseService _paymentDbService;
         private readonly IUserDatabaseService _userDatabaseService;
         private readonly IPostPaymentDatabaseService _postPaymentDbService;
         private readonly IPaymentContextDatabaseService _paymentContextDatabaseService;
+        private readonly ILogger _logger;
 
         public PaymentResolver(IPaymentDatabaseService paymentDbService,
             IUserDatabaseService userDatabaseService,
@@ -32,15 +32,15 @@ namespace PaymentBackend.BL.Http
             ILogger<PaymentResolver> logger,
             IPaymentContextDatabaseService paymentContextDatabaseService
         ) 
-            : base(sqlExceptionHandler, functionSettingsResolver, logger)
         {
             _paymentDbService = paymentDbService;
             _userDatabaseService = userDatabaseService;
             _postPaymentDbService = postPaymentDbService;
             _paymentContextDatabaseService = paymentContextDatabaseService;
+            _logger = logger;
         }
 
-        public Task<IActionResult> GetPayments(long paymentContext)
+        public async Task<HttpResponseData> GetPayments(HttpRequestData req, long paymentContext)
         {
             var allPayments = _paymentDbService.SelectAllPayments(paymentContext);
 
@@ -61,16 +61,16 @@ namespace PaymentBackend.BL.Http
                 Payments = mappedPayments
             };
 
-            return Task.FromResult<IActionResult>(new JsonResult(response));
+            return await BuildOkResponse(req, response);
         }
 
-        public Task<IActionResult> GetPaymentById(long paymentContext, long paymentId)
+        public async Task<HttpResponseData> GetPaymentById(HttpRequestData req, long paymentContext, long paymentId)
         {
             var resolvedPayment = _paymentDbService.SelectPaymentById(paymentContext, paymentId);
 
             if (resolvedPayment == null)
             {
-                return Task.FromResult<IActionResult>(new NotFoundResult());
+                return await BuildNotFoundResponse(req);
             }
 
             var mappedPayment = new Common.Generated.Payment()
@@ -90,21 +90,26 @@ namespace PaymentBackend.BL.Http
                 Payments = new List<Common.Generated.Payment>() { mappedPayment }
             };
 
-            return Task.FromResult<IActionResult>(new JsonResult(response));
+            return await BuildOkResponse(req, response);
         }
 
-        public async Task<IActionResult> ProcessNewPaymentAsync(long paymentContext, HttpRequest req)
+        public async Task<HttpResponseData> ProcessNewPaymentAsync(HttpRequestData req, long paymentContext)
         {
             var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            Common.Generated.PostPaymentRequest postPayment;
+            Common.Generated.PostPaymentRequest? postPayment;
             try
             {
                 postPayment = JsonConvert.DeserializeObject<Common.Generated.PostPaymentRequest>(requestBody);
+
+                if (postPayment == null)
+                {
+                    return await BuildBadRequestResponse(req);
+                }
             }
             catch (Exception e)
             {
                 _logger.LogError($"Bad request: " + e.Message);
-                return new StatusCodeResult(StatusCodes.Status400BadRequest);
+                return await BuildBadRequestResponse(e, req);
             }
 
             try
@@ -114,7 +119,7 @@ namespace PaymentBackend.BL.Http
             catch (PaymentValidationException e)
             {
                 _logger.LogError($"Validation failed for payment: {e.Message}");
-                return new StatusCodeResult(StatusCodes.Status400BadRequest);
+                return await BuildBadRequestResponse(e, req);
             }
 
             /*
@@ -128,12 +133,12 @@ namespace PaymentBackend.BL.Http
             catch (UserNotFoundException e)
             {
                 _logger.LogError($"User not found: " + e.Message);
-                return new StatusCodeResult(StatusCodes.Status400BadRequest);
+                return await BuildBadRequestResponse(e, req);
             }
             catch (PaymentContextNotFoundException e)
             {
                 _logger.LogError($"PaymentContext not found: {e.Message}");
-                return new StatusCodeResult(StatusCodes.Status400BadRequest);
+                return await BuildBadRequestResponse(e, req);
             }
 
             /*
@@ -148,24 +153,24 @@ namespace PaymentBackend.BL.Http
             catch (Exception e)
             {
                 _logger.LogError($"Unexpected Error: {e.Message}");
-                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+                return await BuildInternalServerErrorResponse(e, req);
             }
 
-            return new OkObjectResult(paymentId);
+            return await BuildOkResponse(req);
         }
 
-        public Task<IActionResult> DeletePaymentById(long paymentContext, long paymentId)
+        public async Task<HttpResponseData> DeletePaymentById(HttpRequestData req, long paymentContext, long paymentId)
         {
             Common.Model.Dto.FullPaymentDto? payment = _paymentDbService.SelectPaymentById(paymentContext, paymentId);
 
             if (payment == null)
             {
-                return Task.FromResult<IActionResult>(new NotFoundResult());
+                return await BuildNotFoundResponse(req);
             }
 
             _paymentDbService.MarkPaymentAsDeleted(paymentContext, paymentId);
 
-            return Task.FromResult<IActionResult>(new NoContentResult());
+            return await BuildOkResponse(req);
         }
 
 
@@ -176,6 +181,11 @@ namespace PaymentBackend.BL.Http
             if (resolvedPaymentContext == null)
             {
                 throw new PaymentContextNotFoundException($"Can´t resolve PaymentContext [{paymentContext}]");
+            }
+
+            if (resolvedPaymentContext.IsClosed)
+            {
+                throw new PaymentContextClosedException($"Can´t create new payment. Payment context already closed.");
             }
 
             // resolve the author 

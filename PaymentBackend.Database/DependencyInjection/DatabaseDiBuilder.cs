@@ -1,19 +1,18 @@
-﻿using Microsoft.Azure.Functions.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using PaymentBackend.Database.DatabaseServices;
 
 namespace PaymentBackend.Database.DependencyInjection
 {
     public class DatabaseDiBuilder
     {
-        public void Configure(IFunctionsHostBuilder builder)
+        public void Configure(IServiceCollection serviceCollection)
         {
-            builder.Services.AddSingleton<IUserDatabaseService, UserDatabaseService>();
-            builder.Services.AddSingleton<IPaymentDatabaseService, PaymentDatabaseService>();
-            builder.Services.AddSingleton<IPostPaymentDatabaseService, PostPaymentDatabaseService>();
-            builder.Services.AddSingleton<IPaymentContextDatabaseService, PaymentContextDatabaseService>();
+            serviceCollection.AddSingleton<IUserDatabaseService, UserDatabaseService>();
+            serviceCollection.AddSingleton<IPaymentDatabaseService, PaymentDatabaseService>();
+            serviceCollection.AddSingleton<IPostPaymentDatabaseService, PostPaymentDatabaseService>();
+            serviceCollection.AddSingleton<IPaymentContextDatabaseService, PaymentContextDatabaseService>();
 
-            builder.Services.AddSingleton<ISqlExceptionHandler, SqlExceptionHandler>();
+            serviceCollection.AddSingleton<ISqlExceptionHandler, SqlExceptionHandler>();
         }
     }
 }

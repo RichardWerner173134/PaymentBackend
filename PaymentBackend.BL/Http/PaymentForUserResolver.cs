@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.Azure.Functions.Worker.Http;
 using PaymentBackend.BL.Core;
 using PaymentBackend.Database.DatabaseServices;
 
@@ -6,15 +6,15 @@ namespace PaymentBackend.BL.Http
 {
     public interface IPaymentForUserResolver
     {
-        Task<IActionResult> GetPaymentsForDebitor(long paymentContext, string username);
-        Task<IActionResult> GetPaymentsForCreditor(long paymentContext, string username);
-        Task<IActionResult> GetPaymentsForAuthor(long paymentContext, string username);
+        Task<HttpResponseData> GetPaymentsForDebitor(HttpRequestData req, long paymentContext, string username);
+        Task<HttpResponseData> GetPaymentsForCreditor(HttpRequestData req, long paymentContext, string username);
+        Task<HttpResponseData> GetPaymentsForAuthor(HttpRequestData req, long paymentContext, string username);
 
-        Task<IActionResult> GetPaymentOverviewForDebitor(long paymentContext, string username);
-        Task<IActionResult> GetPaymentOverviewForCreditor(long paymentContext, string username);
+        Task<HttpResponseData> GetPaymentOverviewForDebitor(HttpRequestData req, long paymentContext, string username);
+        Task<HttpResponseData> GetPaymentOverviewForCreditor(HttpRequestData req, long paymentContext, string username);
     }
 
-    public class PaymentForUserResolver : IPaymentForUserResolver
+    public class PaymentForUserResolver : AbstractHttpResolver, IPaymentForUserResolver
     {
         private readonly IPaymentDatabaseService _paymentsDatabaseService;
 
@@ -27,7 +27,7 @@ namespace PaymentBackend.BL.Http
             _paymentOverviewCalculator = paymentOverviewCalculator;
         }
 
-        public Task<IActionResult> GetPaymentsForDebitor(long paymentContext, string username)
+        public async Task<HttpResponseData> GetPaymentsForDebitor(HttpRequestData req, long paymentContext, string username)
         {
             username = username.ToLower();
             
@@ -49,10 +49,10 @@ namespace PaymentBackend.BL.Http
                 Payments = mappedPayments
             };
 
-            return Task.FromResult<IActionResult>(new JsonResult(response));
+            return await BuildOkResponse(req, response);
         }
 
-        public Task<IActionResult> GetPaymentsForCreditor(long paymentContext, string username)
+        public async Task<HttpResponseData> GetPaymentsForCreditor(HttpRequestData req, long paymentContext, string username)
         {
             username = username.ToLower();
             
@@ -74,10 +74,10 @@ namespace PaymentBackend.BL.Http
                 Payments = mappedPayments
             };
 
-            return Task.FromResult<IActionResult>(new JsonResult(response));
+            return await BuildOkResponse(req, response);
         }
 
-        public Task<IActionResult> GetPaymentsForAuthor(long paymentContext, string username)
+        public async Task<HttpResponseData> GetPaymentsForAuthor(HttpRequestData req, long paymentContext, string username)
         {
             username = username.ToLower();
             
@@ -99,10 +99,10 @@ namespace PaymentBackend.BL.Http
                 Payments = mappedPayments
             };
 
-            return Task.FromResult<IActionResult>(new JsonResult(response));
+            return await BuildOkResponse(req, response);
         }
 
-        public Task<IActionResult> GetPaymentOverviewForDebitor(long paymentContext, string username)
+        public async Task<HttpResponseData> GetPaymentOverviewForDebitor(HttpRequestData req, long paymentContext, string username)
         {
             username = username.ToLower();
             
@@ -129,10 +129,10 @@ namespace PaymentBackend.BL.Http
                 CalculationTime = calculationTime
             };
 
-            return Task.FromResult<IActionResult>(new JsonResult(response));
+            return await BuildOkResponse(req, response);
         }
 
-        public Task<IActionResult> GetPaymentOverviewForCreditor(long paymentContext, string username)
+        public async Task<HttpResponseData> GetPaymentOverviewForCreditor(HttpRequestData req, long paymentContext, string username)
         {
             username = username.ToLower();
             
@@ -160,7 +160,7 @@ namespace PaymentBackend.BL.Http
                 CalculationTime = calculationTime
             };
 
-            return Task.FromResult<IActionResult>(new JsonResult(response));
+            return await BuildOkResponse(req, response);
         }
     }
 }

@@ -13,7 +13,8 @@ namespace PaymentBackend.Common.Test.Model
             FullPaymentDto payment = new()
             {
                 Debitors = new List<string>() { "d1", "d2" },
-                Price = (decimal)42.9
+                Price = (decimal)42.9,
+                PaymentContextIsClosed = false
             };
 
             // Act
@@ -32,7 +33,8 @@ namespace PaymentBackend.Common.Test.Model
             FullPaymentDto payment = new()
             {
                 Debitors = new List<string>() { "d1", "d2" },
-                Price = (decimal)42.9
+                Price = (decimal)42.9,
+                PaymentContextIsClosed = false
             };
 
             // Act
@@ -51,7 +53,8 @@ namespace PaymentBackend.Common.Test.Model
             FullPaymentDto payment = new()
             {
                 Debitors = new List<string>() { "d1", "d2" },
-                Price = (decimal)42.9
+                Price = (decimal)42.9,
+                PaymentContextIsClosed = false
             };
 
             BillComposite composite = new(payment, true);

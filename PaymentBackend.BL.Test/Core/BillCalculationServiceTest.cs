@@ -34,7 +34,8 @@ namespace PaymentBackend.BL.Test.Core
                     PaymentDate = new(),
                     Price = 100,
                     UpdateTime = new(),
-                    PaymentDescription = "Payment with Creditor paying for himself"
+                    PaymentDescription = "Payment with Creditor paying for himself",
+                    PaymentContextIsClosed = false
                 },
                 new()
                 {
@@ -45,7 +46,8 @@ namespace PaymentBackend.BL.Test.Core
                     PaymentDate = new(),
                     Price = 20,
                     UpdateTime = new(),
-                    PaymentDescription = "Payment without Creditor paying for himself"
+                    PaymentDescription = "Payment without Creditor paying for himself",
+                    PaymentContextIsClosed = false
                 }
             };
 
@@ -71,7 +73,8 @@ namespace PaymentBackend.BL.Test.Core
                     PaymentDate = new(),
                     Price = 120,
                     UpdateTime = new(),
-                    PaymentDescription = "XXX"
+                    PaymentDescription = "XXX",
+                    PaymentContextIsClosed = false
                 }
             };
 
@@ -120,7 +123,8 @@ namespace PaymentBackend.BL.Test.Core
                     PaymentDate = new(),
                     Price = 120,
                     UpdateTime = new(),
-                    PaymentDescription = "XXX"
+                    PaymentDescription = "XXX",
+                    PaymentContextIsClosed = false
                 },
                 new()
                 {
@@ -131,7 +135,8 @@ namespace PaymentBackend.BL.Test.Core
                     PaymentDate = new(),
                     Price = 120,
                     UpdateTime = new(),
-                    PaymentDescription = "XXX"
+                    PaymentDescription = "XXX",
+                    PaymentContextIsClosed = false
                 }
             };
 
@@ -194,7 +199,8 @@ namespace PaymentBackend.BL.Test.Core
                     PaymentDate = new(),
                     Price = 100,
                     UpdateTime = new(),
-                    PaymentDescription = "XXX"
+                    PaymentDescription = "XXX",
+                    PaymentContextIsClosed = false
                 },
                 new()
                 {
@@ -205,7 +211,8 @@ namespace PaymentBackend.BL.Test.Core
                     PaymentDate = new(),
                     Price = 120,
                     UpdateTime = new(),
-                    PaymentDescription = "XXX"
+                    PaymentDescription = "XXX",
+                    PaymentContextIsClosed = false
                 }
             };
 
@@ -242,7 +249,8 @@ namespace PaymentBackend.BL.Test.Core
                     PaymentDate = new(),
                     Price = 100,
                     UpdateTime = new(),
-                    PaymentDescription = "XXX"
+                    PaymentDescription = "XXX",
+                    PaymentContextIsClosed = false
                 },
                 new()
                 {
@@ -253,7 +261,8 @@ namespace PaymentBackend.BL.Test.Core
                     PaymentDate = new(),
                     Price = 120,
                     UpdateTime = new(),
-                    PaymentDescription = "XXX"
+                    PaymentDescription = "XXX",
+                    PaymentContextIsClosed = false
                 }
             };
 
@@ -313,7 +322,8 @@ namespace PaymentBackend.BL.Test.Core
                     PaymentDate = new(),
                     Price = 100,
                     UpdateTime = new(),
-                    PaymentDescription = "XXX"
+                    PaymentDescription = "XXX",
+                    PaymentContextIsClosed = false
                 },
                 new()
                 {
@@ -324,7 +334,8 @@ namespace PaymentBackend.BL.Test.Core
                     PaymentDate = new(),
                     Price = 120,
                     UpdateTime = new(),
-                    PaymentDescription = "XXX"
+                    PaymentDescription = "XXX",
+                    PaymentContextIsClosed = false
                 }
             };
 

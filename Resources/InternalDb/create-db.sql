@@ -53,3 +53,5 @@ alter table Payments
 
 alter table Payments
 	alter column PaymentContextIdFk bigint not null;
+
+alter table payments alter column price decimal(7,2) not null;

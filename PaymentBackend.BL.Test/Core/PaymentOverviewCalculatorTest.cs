@@ -34,7 +34,8 @@ namespace PaymentBackend.BL.Test.Core
                     Author = creditor,
                     PaymentDate = new(),
                     PaymentDescription = "blubablub",
-                    UpdateTime = new()
+                    UpdateTime = new(),
+                    PaymentContextIsClosed = false
                 },
                 new FullPaymentDto
                 {
@@ -45,7 +46,8 @@ namespace PaymentBackend.BL.Test.Core
                     Author = "",
                     PaymentDate = new(),
                     PaymentDescription = "",
-                    UpdateTime = new()
+                    UpdateTime = new(),
+                    PaymentContextIsClosed = false
                 }
             };
 
@@ -76,7 +78,8 @@ namespace PaymentBackend.BL.Test.Core
                     Author = creditor,
                     PaymentDate = new(),
                     PaymentDescription = "blubablub",
-                    UpdateTime = new()
+                    UpdateTime = new(),
+                    PaymentContextIsClosed = false
                 },
                 new FullPaymentDto
                 {
@@ -87,7 +90,8 @@ namespace PaymentBackend.BL.Test.Core
                     Author = "",
                     PaymentDate = new(),
                     PaymentDescription = "",
-                    UpdateTime = new()
+                    UpdateTime = new(),
+                    PaymentContextIsClosed = false
                 }
             };
 
@@ -122,7 +126,8 @@ namespace PaymentBackend.BL.Test.Core
                     Author = "Richard",
                     PaymentDate = new(),
                     PaymentDescription = "blubablub",
-                    UpdateTime = new()
+                    UpdateTime = new(),
+                    PaymentContextIsClosed = false
                 },
                 new FullPaymentDto
                 {
@@ -133,7 +138,8 @@ namespace PaymentBackend.BL.Test.Core
                     Author = "Richard",
                     PaymentDate = new(),
                     PaymentDescription = "",
-                    UpdateTime = new()
+                    UpdateTime = new(),
+                    PaymentContextIsClosed = false
                 }
             };
 
@@ -167,7 +173,8 @@ namespace PaymentBackend.BL.Test.Core
                     Author = creditor,
                     PaymentDate = new(),
                     PaymentDescription = "blubablub",
-                    UpdateTime = new()
+                    UpdateTime = new(),
+                    PaymentContextIsClosed = false
                 },
                 new FullPaymentDto
                 {
@@ -178,7 +185,8 @@ namespace PaymentBackend.BL.Test.Core
                     Author = "",
                     PaymentDate = new(),
                     PaymentDescription = "",
-                    UpdateTime = new()
+                    UpdateTime = new(),
+                    PaymentContextIsClosed = false
                 }
             };
 
@@ -209,7 +217,8 @@ namespace PaymentBackend.BL.Test.Core
                     Author = "Richard",
                     PaymentDate = new(),
                     PaymentDescription = "blubablub",
-                    UpdateTime = new()
+                    UpdateTime = new(),
+                    PaymentContextIsClosed = false
                 },
                 new FullPaymentDto
                 {
@@ -220,7 +229,8 @@ namespace PaymentBackend.BL.Test.Core
                     Author = "Richard",
                     PaymentDate = new(),
                     PaymentDescription = "",
-                    UpdateTime = new()
+                    UpdateTime = new(),
+                    PaymentContextIsClosed = false
                 }
             };
 

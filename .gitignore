@@ -1,0 +1,67 @@
+# Build output
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Ll]og/
+[Ll]ogs/
+artifacts/
+publish/
+*.pdb
+
+# Visual Studio / Rider / VS Code
+.vs/
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.DotSettings.user
+*.rsuser
+
+# Tests / Coverage
+[Tt]est[Rr]esult*/
+TestResults/
+coverage*.json
+coverage*.xml
+*.coverage
+*.coveragexml
+.msCoverageSourceRootsMapping_*
+CoverletSourceRootsMapping_*
+
+# NuGet
+*.nupkg
+*.snupkg
+**/packages/*
+!**/packages/build/
+project.lock.json
+project.fragment.lock.json
+
+# Azure Functions (local secrets / emulator)
+local.settings.json
+appsettings.*.local.json
+__blobstorage__/
+__queuestorage__/
+__azurite_db*__.json
+.azurite/
+
+# Secrets
+*.pfx
+*.publishsettings
+*.azurePubxml
+PublishProfiles/
+.env
+
+# OS
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Misc
+*.tmp
+*.log
+*.bak

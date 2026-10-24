@@ -27,7 +27,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GetUsersResponse'
-  /payment-contexts:
+  /paymentContexts:
     get:
       summary: get a list of available payment contexts
       description: get a list of available payment contexts
@@ -39,7 +39,7 @@ paths:
             application/json:
               schema: 
                 $ref: '#/components/schemas/GetPaymentContextsResponse'
-  /paymentContext/{paymentContext}/payments:
+  /paymentContexts/{paymentContext}/payments:
     get: 
       summary: get a list of payments
       description: get a list of payments
@@ -48,7 +48,8 @@ paths:
         - in: path
           name: paymentContext
           schema:
-            type: string
+            type: integer
+            format: int64
           required: true
       responses:
         '200':
@@ -65,7 +66,8 @@ paths:
         - in: path
           name: paymentContext
           schema:
-            type: string
+            type: integer
+            format: int64
           required: true
       requestBody:
         description: the payment
@@ -77,7 +79,7 @@ paths:
       responses:
         '200':
           description: Created
-  /paymentContext/{paymentContext}/payments/{paymentId}:
+  /paymentContexts/{paymentContext}/payments/{paymentId}:
     get: 
       summary: get a payment by its id
       description: get a payment by its id
@@ -91,7 +93,8 @@ paths:
         - in: path
           name: paymentContext
           schema:
-            type: string
+            type: integer
+            format: int64
           required: true
       responses:
         '200':
@@ -113,12 +116,13 @@ paths:
         - in: path
           name: paymentContext
           schema:
-            type: string
+            type: integer
+            format: int64
           required: true
       responses:
         '204':
           description: Success
-  /paymentContext/{paymentContext}/payments-for-debitor/{username}:
+  /paymentContexts/{paymentContext}/payments-for-debitor/{username}:
     get:
       summary: get a list of payments where the user is a debitor 
       description: get a list of payments where the user is a debitor 
@@ -132,7 +136,8 @@ paths:
         - in: path
           name: paymentContext
           schema:
-            type: string
+            type: integer
+            format: int64
           required: true
       responses:
         '200':
@@ -141,7 +146,7 @@ paths:
             application/json:
               schema: 
                 $ref: '#/components/schemas/GetPaymentsForDebitorResponse'
-  /paymentContext/{paymentContext}/payments-for-creditor/{username}:
+  /paymentContexts/{paymentContext}/payments-for-creditor/{username}:
     get:
       summary: get a list of payments where the user is the creditor 
       description: get a list of payments where the user is the creditor
@@ -155,7 +160,8 @@ paths:
         - in: path
           name: paymentContext
           schema:
-            type: string
+            type: integer
+            format: int64
           required: true
       responses:
         '200':
@@ -164,7 +170,7 @@ paths:
             application/json:
               schema: 
                 $ref: '#/components/schemas/GetPaymentsForCreditorResponse'
-  /paymentContext/{paymentContext}/payments-for-author/{username}:
+  /paymentContexts/{paymentContext}/payments-for-author/{username}:
     get:
       summary: get a list of payments where the user is the author 
       description: get a list of payments where the user is the author
@@ -178,7 +184,8 @@ paths:
         - in: path
           name: paymentContext
           schema:
-            type: string
+            type: integer
+            format: int64
           required: true
       responses:
         '200':
@@ -187,7 +194,7 @@ paths:
             application/json:
               schema: 
                 $ref: '#/components/schemas/GetPaymentsForAuthorResponse'
-  /paymentContext/{paymentContext}/payment-overview-for-debitor/{username}:
+  /paymentContexts/{paymentContext}/payment-overview-for-debitor/{username}:
     get:
       summary: get an overview of payments where the user is a debitor 
       description: get an overview of payments where the user is a debitor 
@@ -201,7 +208,8 @@ paths:
         - in: path
           name: paymentContext
           schema:
-            type: string
+            type: integer
+            format: int64
           required: true
       responses:
         '200':
@@ -210,7 +218,7 @@ paths:
             application/json:
               schema: 
                 $ref: '#/components/schemas/GetPaymentOverviewForDebitorResponse'
-  /paymentContext/{paymentContext}/payment-overview-for-creditor/{username}:
+  /paymentContexts/{paymentContext}/payment-overview-for-creditor/{username}:
     get:
       summary: get an overview of payments where the user is the creditor 
       description: get an overview of payments where the user is the creditor
@@ -224,7 +232,8 @@ paths:
         - in: path
           name: paymentContext
           schema:
-            type: string
+            type: integer
+            format: int64
           required: true
       responses:
         '200':
@@ -233,7 +242,7 @@ paths:
             application/json:
               schema: 
                 $ref: '#/components/schemas/GetPaymentOverviewForCreditorResponse'
-  /paymentContext/{paymentContext}/bills:
+  /paymentContexts/{paymentContext}/bills:
     get:
       summary: get a list of bills
       description: get a list of bills
@@ -242,7 +251,8 @@ paths:
         - in: path
           name: paymentContext
           schema:
-            type: string
+            type: integer
+            format: int64
           required: true
       responses:
         '200':
@@ -251,7 +261,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GetAllBillsResponse'
-  /paymentContext/{paymentContext}/bills/all/users/{username}:
+  /paymentContexts/{paymentContext}/bills/all/users/{username}:
     get:
       summary: get a list of bills for a user
       description: get a list of bills for a user
@@ -266,7 +276,8 @@ paths:
         - in: path
           name: paymentContext
           schema:
-            type: string
+            type: integer
+            format: int64
           required: true
       responses:
         '200':
@@ -276,7 +287,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/GetBillsForUserResponse'
                 
-  /paymentContext/{paymentContext}/bill-overviews:
+  /paymentContexts/{paymentContext}/bill-overviews:
     get:
       summary: get an overview of bills for all users
       description: get an overview of bills for all users
@@ -285,7 +296,8 @@ paths:
         - in: path
           name: paymentContext
           schema:
-            type: string
+            type: integer
+            format: int64
           required: true
       responses:
         '200':
@@ -294,7 +306,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GetAllBillOverviewsResponse'                
-  /paymentContext/{paymentContext}/bill-overviews/all/users/{username}:
+  /paymentContexts/{paymentContext}/bill-overviews/all/users/{username}:
     get:
       summary: get an overview of bills for a user
       description: get an overview of bills for a user
@@ -309,7 +321,8 @@ paths:
         - in: path
           name: paymentContext
           schema:
-            type: string
+            type: integer
+            format: int64
           required: true
       responses:
         '200':
@@ -397,7 +410,7 @@ components:
           type: string
           description: date of the payment
           format: date-time
-          example: '2024-01-04'
+          example: '2024-01-04T09:00:00.000Z'
         price: 
           type: number
           example: 20.99
@@ -451,7 +464,7 @@ components:
           type: string
           description: date of the payment
           format: date-time
-          example: '2024-01-04'
+          example: '2024-01-04T09:00:00.000Z'
         price: 
           type: number
           example: 20.99
@@ -514,7 +527,7 @@ components:
           type: string
           description: date of the calculation
           format: date-time
-          example: '2024-01-04'
+          example: '2024-01-04T09:00:00.000Z'
         totalDebitorOnly:
           type: number
           example: 24.42
@@ -533,7 +546,7 @@ components:
           type: string
           description: date of the calculation
           format: date-time
-          example: '2024-01-04'
+          example: '2024-01-04T09:00:00.000Z'
         totalWithCreditor:
           type: number
           example: 169.42

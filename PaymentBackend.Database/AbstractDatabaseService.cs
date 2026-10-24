@@ -1,4 +1,4 @@
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
 using PaymentBackend.Common.Exceptions;
 using PaymentBackend.Settings;

@@ -1,16 +1,12 @@
 {
     "version": "2.0",
+    "telemetryMode": "OpenTelemetry",
     "logging": {
-      "applicationInsights": {
-        "samplingSettings": {
-          "isEnabled": true,
-          "excludedTypes": "Request"
-        },
-        "enableLiveMetricsFilters": true
-      },
       "logLevel": {
-        "Function": "Information",
-        "default": "Warning"
+        "default": "Error",
+        "Function": "Warning",
+        "Host.Aggregator": "Error",
+        "Host.Results": "Information"
       }
   }
 }

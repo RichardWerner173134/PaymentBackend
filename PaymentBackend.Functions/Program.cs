@@ -1,6 +1,11 @@
-﻿using Microsoft.Azure.Functions.Worker;
+﻿using Azure.Monitor.OpenTelemetry.Exporter;
+using Microsoft.Azure.Functions.Worker.Builder;
+using Microsoft.Azure.Functions.Worker.OpenTelemetry;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using OpenTelemetry;
+using OpenTelemetry.Trace;
 using PaymentBackend.BL.DependencyInjection;
 using PaymentBackend.Common.DependencyInjection;
 using PaymentBackend.Database.DependencyInjection;
@@ -8,37 +13,38 @@ using PaymentBackend.Settings.DependencyInjection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace PaymentBackend.Functions
-{
-    public class Program
+var builder = FunctionsApplication.CreateBuilder(args);
+
+builder.ConfigureFunctionsWebApplication();
+
+builder.Services
+    .AddOpenTelemetry()
+    .UseFunctionsWorkerDefaults()
+    .WithTracing(tracing =>
     {
-        public static void Main(string[] args)
-        {
+        tracing
+            .AddHttpClientInstrumentation()
+            .AddSqlClientInstrumentation();
+    })
+    .UseAzureMonitorExporter(options =>
+    {
+        options.TracesPerSecond = 1;
+        options.EnableTraceBasedLogsSampler = false;
+    });
 
-            var host = new HostBuilder()
-                .ConfigureFunctionsWorkerDefaults(wa =>
-                {
-                    wa.Services.Configure<JsonSerializerOptions>(options =>
-                    {
-                        options.WriteIndented = true;
-                        options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-                        options.Converters.Add(new JsonStringEnumConverter());
-                    });
-                })
-                .ConfigureServices(s =>
-                {
-                    s.AddLogging();
-                    s.AddApplicationInsightsTelemetryWorkerService();
-                    s.ConfigureFunctionsApplicationInsights();
+builder.Logging.SetMinimumLevel(LogLevel.Error);
 
-                    new SettingsDiBuilder().Configure(s);
-                    new CommonDiBuilder().Configure(s);
-                    new DatabaseDiBuilder().Configure(s);
-                    new BlDiBUilder().Configure(s);
-                })
-                .Build();
+builder.Services.Configure<JsonSerializerOptions>(options =>
+{
+    options.WriteIndented = true;
+    options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    options.Converters.Add(new JsonStringEnumConverter());
+});
 
-            host.Run();
-        }
-    }
-}
+// dependency injection
+new SettingsDiBuilder().Configure(builder.Services);
+new CommonDiBuilder().Configure(builder.Services);
+new DatabaseDiBuilder().Configure(builder.Services);
+new BlDiBUilder().Configure(builder.Services);
+
+builder.Build().Run();

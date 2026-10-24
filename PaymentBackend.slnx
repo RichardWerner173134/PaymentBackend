@@ -1,0 +1,12 @@
+<Solution>
+  <Project Path="PaymentBackend.BL.Test/PaymentBackend.BL.Test.csproj" />
+  <Project Path="PaymentBackend.BL/PaymentBackend.BL.csproj" />
+  <Project Path="PaymentBackend.Common.Test/PaymentBackend.Common.Test.csproj" />
+  <Project Path="PaymentBackend.Common/PaymentBackend.Common.csproj" />
+  <Project Path="PaymentBackend.Database/PaymentBackend.Database.csproj" />
+  <Project Path="PaymentBackend.Functions/PaymentBackend.Functions.csproj">
+    <BuildDependency Project="Resources/Resources.csproj" />
+  </Project>
+  <Project Path="PaymentBackend.Settings/PaymentBackend.Settings.csproj" />
+  <Project Path="Resources/Resources.csproj" />
+</Solution>

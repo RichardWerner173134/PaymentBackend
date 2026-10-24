@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using PaymentBackend.Settings;
 using PaymentBackend.Common.Model.Dto;
 

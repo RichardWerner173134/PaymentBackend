@@ -15,14 +15,14 @@ namespace PaymentBackend.Functions.HttpTrigger
         }
 
 
-        [Function(nameof(GetPaymentsForAuthor))]
-        public async Task<HttpResponseData> GetPaymentsForAuthor(
+        [Function("GetPaymentsForAuthor")]
+        public async Task<HttpResponseData> GetPaymentsForAuthorAsync(
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = "paymentContexts/{paymentContext}/payments-for-author/{username}")] HttpRequestData req,
             long paymentContext,
             string username
         )
         {
-            return await _resolver.GetPaymentsForAuthor(req, paymentContext, username);
+            return await _resolver.GetPaymentsForAuthorAsync(req, paymentContext, username);
         }
     }
 }

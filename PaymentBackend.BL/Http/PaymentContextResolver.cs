@@ -5,7 +5,7 @@ namespace PaymentBackend.BL.Http
 {
     public interface IPaymentContextResolver
     {
-        Task<HttpResponseData> GetPaymentContexts(HttpRequestData req);
+        Task<HttpResponseData> GetPaymentContextsAsync(HttpRequestData req);
     }
 
     public class PaymentContextResolver : AbstractHttpResolver, IPaymentContextResolver
@@ -19,7 +19,7 @@ namespace PaymentBackend.BL.Http
             _paymentContextDatabaseService = paymentContextDatabaseService;
         }
 
-        public async Task<HttpResponseData> GetPaymentContexts(HttpRequestData req)
+        public async Task<HttpResponseData> GetPaymentContextsAsync(HttpRequestData req)
         {
             List<Common.Model.PaymentContext> result = _paymentContextDatabaseService.SelectAllPaymentContexts();
 
@@ -38,7 +38,7 @@ namespace PaymentBackend.BL.Http
                 PaymentContexts = mappedResults
             };
 
-            return await BuildOkResponse(req, response);
+            return await BuildOkResponseAsync(req, response);
         }
     }
 }

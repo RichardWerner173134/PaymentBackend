@@ -14,27 +14,27 @@ namespace PaymentBackend.Functions.HttpTrigger
             _resolver = resolver;
         }
 
-        [Function(nameof(GetAllPayments))]
-        public Task<HttpResponseData> GetAllPayments(
+        [Function("GetAllPayments")]
+        public Task<HttpResponseData> GetAllPaymentsAsync(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "paymentContexts/{paymentContext}/payments")] HttpRequestData req, 
             long paymentContext
         )
         {
-            return _resolver.GetPayments(req, paymentContext);
+            return _resolver.GetPaymentsAsync(req, paymentContext);
         }
 
-        [Function(nameof(GetPaymentById))]
-        public Task<HttpResponseData> GetPaymentById(
+        [Function("GetPaymentById")]
+        public Task<HttpResponseData> GetPaymentByIdAsync(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "paymentContexts/{paymentContext}/payments/{paymentId}")] HttpRequestData req,
             long paymentContext,
             long paymentId
         )
         {
-            return _resolver.GetPaymentById(req, paymentContext, paymentId);
+            return _resolver.GetPaymentByIdAsync(req, paymentContext, paymentId);
         }
 
-        [Function(nameof(PostPayment))]
-        public async Task<HttpResponseData> PostPayment(
+        [Function("PostPayment")]
+        public async Task<HttpResponseData> PostPaymentAsync(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "paymentContexts/{paymentContext}/payments")] HttpRequestData req, 
             long paymentContext
         )
@@ -42,14 +42,14 @@ namespace PaymentBackend.Functions.HttpTrigger
             return await _resolver.ProcessNewPaymentAsync(req, paymentContext);
         }
 
-        [Function(nameof(DeletePaymentById))]
-        public Task<HttpResponseData> DeletePaymentById(
+        [Function("DeletePaymentById")]
+        public Task<HttpResponseData> DeletePaymentByIdAsync(
             [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "paymentContexts/{paymentContext}/payments/{paymentId}")] HttpRequestData req, 
             long paymentContext, 
             long paymentId
         )
         {
-            return _resolver.DeletePaymentById(req, paymentContext, paymentId);
+            return _resolver.DeletePaymentByIdAsync(req, paymentContext, paymentId);
         }
     }
 }

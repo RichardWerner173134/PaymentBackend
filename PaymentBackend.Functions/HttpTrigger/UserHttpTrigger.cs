@@ -18,11 +18,11 @@ namespace PaymentBackend.Functions.HttpTrigger
             _resolver = resolver;
         }
 
-        [Function(nameof(GetAllUsers))]
-        public Task<HttpResponseData> GetAllUsers(
+        [Function("GetAllUsers")]
+        public Task<HttpResponseData> GetAllUsersAsync(
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = "users")] HttpRequestData req)
         {
-            return _resolver.GetPaymentUsers(req);
+            return _resolver.GetPaymentUsersAsync(req);
         }
     }
 }

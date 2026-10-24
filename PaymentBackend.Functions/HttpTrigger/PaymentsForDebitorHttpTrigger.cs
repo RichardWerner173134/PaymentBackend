@@ -15,24 +15,24 @@ namespace PaymentBackend.Functions.HttpTrigger
         }
 
 
-        [Function(nameof(GetPaymentsForDebitor))]
-        public Task<HttpResponseData> GetPaymentsForDebitor(
+        [Function("GetPaymentsForDebitor")]
+        public Task<HttpResponseData> GetPaymentsForDebitorAsync(
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = "paymentContexts/{paymentContext}/payments-for-debitor/{username}")] HttpRequestData req,
             long paymentContext, 
             string username
         )
         {
-            return _resolver.GetPaymentsForDebitor(req, paymentContext, username);
+            return _resolver.GetPaymentsForDebitorAsync(req, paymentContext, username);
         }
 
-        [Function(nameof(GetPaymentOverviewForDebitor))]
-        public Task<HttpResponseData> GetPaymentOverviewForDebitor(
+        [Function("GetPaymentOverviewForDebitor")]
+        public Task<HttpResponseData> GetPaymentOverviewForDebitorAsync(
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = "paymentContexts/{paymentContext}/payment-overview-for-debitor/{username}")] HttpRequestData req,
             long paymentContext,
             string username
         )
         {
-            return _resolver.GetPaymentOverviewForDebitor(req, paymentContext, username);
+            return _resolver.GetPaymentOverviewForDebitorAsync(req, paymentContext, username);
         }
     }
 }

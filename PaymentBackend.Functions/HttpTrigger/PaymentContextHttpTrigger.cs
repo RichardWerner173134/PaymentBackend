@@ -17,12 +17,12 @@ namespace PaymentBackend.Functions.HttpTrigger
             _paymentContextResolver = paymentContextResolver;
         }
 
-        [Function(nameof(GetPaymentContexts))]
-        public async Task<HttpResponseData> GetPaymentContexts(
+        [Function("GetPaymentContexts")]
+        public async Task<HttpResponseData> GetPaymentContextsAsync(
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = "paymentContexts")] HttpRequestData req,
             ILogger log)
         {
-            return await _paymentContextResolver.GetPaymentContexts(req);
+            return await _paymentContextResolver.GetPaymentContextsAsync(req);
         }
     }
 }

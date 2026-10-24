@@ -9,10 +9,10 @@ namespace PaymentBackend.BL.Http
 {
     public interface IPaymentResolver
     {
-        Task<HttpResponseData> GetPayments(HttpRequestData req, long paymentContext);
-        Task<HttpResponseData> GetPaymentById(HttpRequestData req, long paymentContext, long paymentId);
+        Task<HttpResponseData> GetPaymentsAsync(HttpRequestData req, long paymentContext);
+        Task<HttpResponseData> GetPaymentByIdAsync(HttpRequestData req, long paymentContext, long paymentId);
         Task<HttpResponseData> ProcessNewPaymentAsync(HttpRequestData req, long paymentContext);
-        Task<HttpResponseData> DeletePaymentById(HttpRequestData req, long paymentContext, long paymentId);
+        Task<HttpResponseData> DeletePaymentByIdAsync(HttpRequestData req, long paymentContext, long paymentId);
     }
 
     public class PaymentResolver : AbstractHttpResolver, IPaymentResolver
@@ -38,7 +38,7 @@ namespace PaymentBackend.BL.Http
             _logger = logger;
         }
 
-        public async Task<HttpResponseData> GetPayments(HttpRequestData req, long paymentContext)
+        public async Task<HttpResponseData> GetPaymentsAsync(HttpRequestData req, long paymentContext)
         {
             var allPayments = _paymentDbService.SelectAllPayments(paymentContext);
 
@@ -59,16 +59,16 @@ namespace PaymentBackend.BL.Http
                 Payments = mappedPayments
             };
 
-            return await BuildOkResponse(req, response);
+            return await BuildOkResponseAsync(req, response);
         }
 
-        public async Task<HttpResponseData> GetPaymentById(HttpRequestData req, long paymentContext, long paymentId)
+        public async Task<HttpResponseData> GetPaymentByIdAsync(HttpRequestData req, long paymentContext, long paymentId)
         {
             var resolvedPayment = _paymentDbService.SelectPaymentById(paymentContext, paymentId);
 
             if (resolvedPayment == null)
             {
-                return await BuildNotFoundResponse(req);
+                return await BuildNotFoundResponseAsync(req);
             }
 
             var mappedPayment = new Common.Generated.Payment()
@@ -88,7 +88,7 @@ namespace PaymentBackend.BL.Http
                 Payments = new List<Common.Generated.Payment>() { mappedPayment }
             };
 
-            return await BuildOkResponse(req, response);
+            return await BuildOkResponseAsync(req, response);
         }
 
         public async Task<HttpResponseData> ProcessNewPaymentAsync(HttpRequestData req, long paymentContext)
@@ -101,13 +101,13 @@ namespace PaymentBackend.BL.Http
 
                 if (postPayment == null)
                 {
-                    return await BuildBadRequestResponse(req);
+                    return await BuildBadRequestResponseAsync(req);
                 }
             }
             catch (Exception e)
             {
                 _logger.LogError($"Bad request: " + e.Message);
-                return await BuildBadRequestResponse(e, req);
+                return await BuildBadRequestResponseAsync(e, req);
             }
 
             try
@@ -117,7 +117,7 @@ namespace PaymentBackend.BL.Http
             catch (PaymentValidationException e)
             {
                 _logger.LogError($"Validation failed for payment: {e.Message}");
-                return await BuildBadRequestResponse(e, req);
+                return await BuildBadRequestResponseAsync(e, req);
             }
 
             /*
@@ -131,12 +131,12 @@ namespace PaymentBackend.BL.Http
             catch (UserNotFoundException e)
             {
                 _logger.LogError($"User not found: " + e.Message);
-                return await BuildBadRequestResponse(e, req);
+                return await BuildBadRequestResponseAsync(e, req);
             }
             catch (PaymentContextNotFoundException e)
             {
                 _logger.LogError($"PaymentContext not found: {e.Message}");
-                return await BuildBadRequestResponse(e, req);
+                return await BuildBadRequestResponseAsync(e, req);
             }
 
             /*
@@ -151,24 +151,24 @@ namespace PaymentBackend.BL.Http
             catch (Exception e)
             {
                 _logger.LogError($"Unexpected Error: {e.Message}");
-                return await BuildInternalServerErrorResponse(e, req);
+                return await BuildInternalServerErrorResponseAsync(e, req);
             }
 
-            return await BuildOkResponse(req);
+            return await BuildOkResponseAsync(req);
         }
 
-        public async Task<HttpResponseData> DeletePaymentById(HttpRequestData req, long paymentContext, long paymentId)
+        public async Task<HttpResponseData> DeletePaymentByIdAsync(HttpRequestData req, long paymentContext, long paymentId)
         {
             Common.Model.Dto.FullPaymentDto? payment = _paymentDbService.SelectPaymentById(paymentContext, paymentId);
 
             if (payment == null)
             {
-                return await BuildNotFoundResponse(req);
+                return await BuildNotFoundResponseAsync(req);
             }
 
             _paymentDbService.MarkPaymentAsDeleted(paymentContext, paymentId);
 
-            return await BuildOkResponse(req);
+            return await BuildOkResponseAsync(req);
         }
 
 

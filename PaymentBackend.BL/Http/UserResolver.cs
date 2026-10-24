@@ -5,7 +5,7 @@ namespace PaymentBackend.BL.Http
 {
     public interface IUserResolver
     {
-        Task<HttpResponseData> GetPaymentUsers(HttpRequestData req);
+        Task<HttpResponseData> GetPaymentUsersAsync(HttpRequestData req);
     }
 
     public class UserResolver : AbstractHttpResolver, IUserResolver
@@ -17,7 +17,7 @@ namespace PaymentBackend.BL.Http
             _userDbService = userDbService;
         }
 
-        public async Task<HttpResponseData> GetPaymentUsers(HttpRequestData req)
+        public async Task<HttpResponseData> GetPaymentUsersAsync(HttpRequestData req)
         {
             var allUsers = _userDbService.SelectAllUsers();
 
@@ -34,7 +34,7 @@ namespace PaymentBackend.BL.Http
                 UserList = httpMappedUsers
             };
 
-            return await BuildOkResponse(req, response);
+            return await BuildOkResponseAsync(req, response);
         }
     }
 }

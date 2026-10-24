@@ -2,6 +2,7 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 using PaymentBackend.BL.Http;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PaymentBackend.Functions.HttpTrigger
@@ -20,9 +21,10 @@ namespace PaymentBackend.Functions.HttpTrigger
 
         [Function("GetAllUsers")]
         public Task<HttpResponseData> GetAllUsersAsync(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "users")] HttpRequestData req)
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "users")] HttpRequestData req,
+            CancellationToken cancellationToken)
         {
-            return _resolver.GetPaymentUsersAsync(req);
+            return _resolver.GetPaymentUsersAsync(req, cancellationToken);
         }
     }
 }

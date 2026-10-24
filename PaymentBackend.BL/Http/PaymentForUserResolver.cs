@@ -6,12 +6,12 @@ namespace PaymentBackend.BL.Http
 {
     public interface IPaymentForUserResolver
     {
-        Task<HttpResponseData> GetPaymentsForDebitorAsync(HttpRequestData req, long paymentContext, string username);
-        Task<HttpResponseData> GetPaymentsForCreditorAsync(HttpRequestData req, long paymentContext, string username);
-        Task<HttpResponseData> GetPaymentsForAuthorAsync(HttpRequestData req, long paymentContext, string username);
+        Task<HttpResponseData> GetPaymentsForDebitorAsync(HttpRequestData req, long paymentContext, string username, CancellationToken cancellationToken);
+        Task<HttpResponseData> GetPaymentsForCreditorAsync(HttpRequestData req, long paymentContext, string username, CancellationToken cancellationToken);
+        Task<HttpResponseData> GetPaymentsForAuthorAsync(HttpRequestData req, long paymentContext, string username, CancellationToken cancellationToken);
 
-        Task<HttpResponseData> GetPaymentOverviewForDebitorAsync(HttpRequestData req, long paymentContext, string username);
-        Task<HttpResponseData> GetPaymentOverviewForCreditorAsync(HttpRequestData req, long paymentContext, string username);
+        Task<HttpResponseData> GetPaymentOverviewForDebitorAsync(HttpRequestData req, long paymentContext, string username, CancellationToken cancellationToken);
+        Task<HttpResponseData> GetPaymentOverviewForCreditorAsync(HttpRequestData req, long paymentContext, string username, CancellationToken cancellationToken);
     }
 
     public class PaymentForUserResolver : AbstractHttpResolver, IPaymentForUserResolver
@@ -27,11 +27,11 @@ namespace PaymentBackend.BL.Http
             _paymentOverviewCalculator = paymentOverviewCalculator;
         }
 
-        public async Task<HttpResponseData> GetPaymentsForDebitorAsync(HttpRequestData req, long paymentContext, string username)
+        public async Task<HttpResponseData> GetPaymentsForDebitorAsync(HttpRequestData req, long paymentContext, string username, CancellationToken cancellationToken)
         {
             username = username.ToLower();
             
-            List<Common.Model.Dto.FullPaymentDto> result = await _paymentsDatabaseService.SelectPaymentsByDebitorAsync(paymentContext, username);
+            List<Common.Model.Dto.FullPaymentDto> result = await _paymentsDatabaseService.SelectPaymentsByDebitorAsync(paymentContext, username, cancellationToken);
             List<Common.Generated.Payment> mappedPayments =
             [
                 .. result.Select(payment => new Common.Generated.Payment
@@ -52,14 +52,14 @@ namespace PaymentBackend.BL.Http
                 Payments = mappedPayments
             };
 
-            return await BuildOkResponseAsync(req, response);
+            return await BuildOkResponseAsync(req, response, cancellationToken);
         }
 
-        public async Task<HttpResponseData> GetPaymentsForCreditorAsync(HttpRequestData req, long paymentContext, string username)
+        public async Task<HttpResponseData> GetPaymentsForCreditorAsync(HttpRequestData req, long paymentContext, string username, CancellationToken cancellationToken)
         {
             username = username.ToLower();
             
-            List<Common.Model.Dto.FullPaymentDto> result = await _paymentsDatabaseService.SelectPaymentsByCreditorAsync(paymentContext, username);
+            List<Common.Model.Dto.FullPaymentDto> result = await _paymentsDatabaseService.SelectPaymentsByCreditorAsync(paymentContext, username, cancellationToken);
             List<Common.Generated.Payment> mappedPayments =
             [
                 .. result.Select(payment => new Common.Generated.Payment
@@ -80,14 +80,14 @@ namespace PaymentBackend.BL.Http
                 Payments = mappedPayments
             };
 
-            return await BuildOkResponseAsync(req, response);
+            return await BuildOkResponseAsync(req, response, cancellationToken);
         }
 
-        public async Task<HttpResponseData> GetPaymentsForAuthorAsync(HttpRequestData req, long paymentContext, string username)
+        public async Task<HttpResponseData> GetPaymentsForAuthorAsync(HttpRequestData req, long paymentContext, string username, CancellationToken cancellationToken)
         {
             username = username.ToLower();
             
-            List<Common.Model.Dto.FullPaymentDto> result = await _paymentsDatabaseService.SelectPaymentsByAuthorAsync(paymentContext, username);
+            List<Common.Model.Dto.FullPaymentDto> result = await _paymentsDatabaseService.SelectPaymentsByAuthorAsync(paymentContext, username, cancellationToken);
             List<Common.Generated.Payment> mappedPayments =
             [
                 .. result.Select(payment => new Common.Generated.Payment
@@ -108,15 +108,15 @@ namespace PaymentBackend.BL.Http
                 Payments = mappedPayments
             };
 
-            return await BuildOkResponseAsync(req, response);
+            return await BuildOkResponseAsync(req, response, cancellationToken);
         }
 
-        public async Task<HttpResponseData> GetPaymentOverviewForDebitorAsync(HttpRequestData req, long paymentContext, string username)
+        public async Task<HttpResponseData> GetPaymentOverviewForDebitorAsync(HttpRequestData req, long paymentContext, string username, CancellationToken cancellationToken)
         {
             username = username.ToLower();
             
             DateTime calculationTime = DateTime.Now;
-            List<Common.Model.Dto.FullPaymentDto> allPayments = await _paymentsDatabaseService.SelectPaymentsByDebitorAsync(paymentContext, username);
+            List<Common.Model.Dto.FullPaymentDto> allPayments = await _paymentsDatabaseService.SelectPaymentsByDebitorAsync(paymentContext, username, cancellationToken);
             Common.Model.PaymentOverviewForDebitor paymentOverviewForDebitor = _paymentOverviewCalculator.GetPaymentOverviewForDebitor(allPayments, username);
             List<Common.Generated.Payment> mappedPayments =
             [
@@ -141,15 +141,15 @@ namespace PaymentBackend.BL.Http
                 CalculationTime = calculationTime
             };
 
-            return await BuildOkResponseAsync(req, response);
+            return await BuildOkResponseAsync(req, response, cancellationToken);
         }
 
-        public async Task<HttpResponseData> GetPaymentOverviewForCreditorAsync(HttpRequestData req, long paymentContext, string username)
+        public async Task<HttpResponseData> GetPaymentOverviewForCreditorAsync(HttpRequestData req, long paymentContext, string username, CancellationToken cancellationToken)
         {
             username = username.ToLower();
             
             DateTime calculationTime = DateTime.Now;
-            List<Common.Model.Dto.FullPaymentDto> allPayments = await _paymentsDatabaseService.SelectPaymentsByCreditorAsync(paymentContext, username);
+            List<Common.Model.Dto.FullPaymentDto> allPayments = await _paymentsDatabaseService.SelectPaymentsByCreditorAsync(paymentContext, username, cancellationToken);
             Common.Model.PaymentOverviewForCreditor paymentOverviewForCreditor = _paymentOverviewCalculator.GetPaymentOverviewForCreditor(allPayments, username);
             List<Common.Generated.Payment> mappedPayments =
             [
@@ -175,7 +175,7 @@ namespace PaymentBackend.BL.Http
                 CalculationTime = calculationTime
             };
 
-            return await BuildOkResponseAsync(req, response);
+            return await BuildOkResponseAsync(req, response, cancellationToken);
         }
     }
 }

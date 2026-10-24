@@ -11,10 +11,10 @@ namespace PaymentBackend.BL.Http
             return await Task.FromResult(httpResponseData);
         }
 
-        protected static async Task<HttpResponseData> BuildOkResponseAsync<T>(HttpRequestData req, T realResponse)
+        protected static async Task<HttpResponseData> BuildOkResponseAsync<T>(HttpRequestData req, T realResponse, CancellationToken cancellationToken)
         {
             HttpResponseData httpResponseData = req.CreateResponse(HttpStatusCode.OK);
-            await httpResponseData.WriteAsJsonAsync(realResponse);
+            await httpResponseData.WriteAsJsonAsync(realResponse, cancellationToken);
             return httpResponseData;
         }
         protected static async Task<HttpResponseData> BuildBadRequestResponseAsync(HttpRequestData req)
@@ -23,12 +23,12 @@ namespace PaymentBackend.BL.Http
             return await Task.FromResult(httpResponseData);
         }
 
-        protected static async Task<HttpResponseData> BuildBadRequestResponseAsync(Exception e, HttpRequestData req)
+        protected static async Task<HttpResponseData> BuildBadRequestResponseAsync(Exception e, HttpRequestData req, CancellationToken cancellationToken)
         {
             string msg = $"Bad Request: {e.Message}";
 
             HttpResponseData httpResponseData = req.CreateResponse(HttpStatusCode.NotFound);
-            await httpResponseData.WriteAsJsonAsync(msg);
+            await httpResponseData.WriteAsJsonAsync(msg, cancellationToken);
             return httpResponseData;
         }
 
@@ -38,21 +38,21 @@ namespace PaymentBackend.BL.Http
             return await Task.FromResult(httpResponseData);
         }
 
-        protected static async Task<HttpResponseData> BuildNotFoundResponseAsync(Exception e, HttpRequestData req)
+        protected static async Task<HttpResponseData> BuildNotFoundResponseAsync(Exception e, HttpRequestData req, CancellationToken cancellationToken)
         {
             string msg = $"Resource not found: {e.Message}"; 
 
             HttpResponseData httpResponseData = req.CreateResponse(HttpStatusCode.NotFound);
-            await httpResponseData.WriteAsJsonAsync(msg);
+            await httpResponseData.WriteAsJsonAsync(msg, cancellationToken);
             return httpResponseData;
         }
 
-        protected static async Task<HttpResponseData> BuildInternalServerErrorResponseAsync(Exception e, HttpRequestData req)
+        protected static async Task<HttpResponseData> BuildInternalServerErrorResponseAsync(Exception e, HttpRequestData req, CancellationToken cancellationToken)
         {
             string msg = $"Internal Server Error: {e.Message}";
 
             HttpResponseData httpResponseData = req.CreateResponse(HttpStatusCode.NotFound);
-            await httpResponseData.WriteAsJsonAsync(msg);
+            await httpResponseData.WriteAsJsonAsync(msg, cancellationToken);
             return httpResponseData;
         }
     }

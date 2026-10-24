@@ -17,7 +17,7 @@ namespace PaymentBackend.Database.DatabaseServices
         {
         }
 
-        protected async Task<List<JoinedPayment2DebitorDto>> SelectAllPayment2DebitorsAsync(SqlConnection connection, long paymentContext)
+        protected async Task<List<JoinedPayment2DebitorDto>> SelectAllPayment2DebitorsAsync(SqlConnection connection, long paymentContext, CancellationToken cancellationToken)
         {
             string sql = @"
 select 
@@ -60,8 +60,8 @@ order by
 
             List<JoinedPayment2DebitorDto> result = [];
 
-            await using SqlDataReader reader = await cmd1.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
+            await using SqlDataReader reader = await cmd1.ExecuteReaderAsync(cancellationToken);
+            while (await reader.ReadAsync(cancellationToken))
             {
                 JoinedPayment2DebitorDto joinedPayment2Debitor = ConvertDbToObject(reader);
                 result.Add(joinedPayment2Debitor);
@@ -70,7 +70,7 @@ order by
             return result;
         }
 
-        protected async Task<List<JoinedPayment2DebitorDto>> SelectPaymentByIdAsync(SqlConnection connection, long paymentContext, long id)
+        protected async Task<List<JoinedPayment2DebitorDto>> SelectPaymentByIdAsync(SqlConnection connection, long paymentContext, long id, CancellationToken cancellationToken)
         {
             string sql = @"
 with p2d as (
@@ -121,8 +121,8 @@ order by
 
             List<JoinedPayment2DebitorDto> result = [];
 
-            await using SqlDataReader reader = await cmd.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
+            await using SqlDataReader reader = await cmd.ExecuteReaderAsync(cancellationToken);
+            while (await reader.ReadAsync(cancellationToken))
             {
                 JoinedPayment2DebitorDto joinedPayment2Debitor = ConvertDbToObject(reader);
                 result.Add(joinedPayment2Debitor);
@@ -131,7 +131,7 @@ order by
             return result;
         }
 
-        protected async Task<List<JoinedPayment2DebitorDto>> SelectPaymentsByCreditorAsync(SqlConnection connection, long paymentContext, string username)
+        protected async Task<List<JoinedPayment2DebitorDto>> SelectPaymentsByCreditorAsync(SqlConnection connection, long paymentContext, string username, CancellationToken cancellationToken)
         {
             string sql = @"
 with c as (
@@ -182,8 +182,8 @@ order by
 
             List<JoinedPayment2DebitorDto> result = [];
 
-            await using SqlDataReader reader = await cmd.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
+            await using SqlDataReader reader = await cmd.ExecuteReaderAsync(cancellationToken);
+            while (await reader.ReadAsync(cancellationToken))
             {
                 JoinedPayment2DebitorDto joinedPayment2Debitor = ConvertDbToObject(reader);
                 result.Add(joinedPayment2Debitor);
@@ -192,7 +192,7 @@ order by
             return result;
         }
 
-        protected async Task<List<JoinedPayment2DebitorDto>> SelectPaymentsByDebitorAsync(SqlConnection connection, long paymentContext, string username)
+        protected async Task<List<JoinedPayment2DebitorDto>> SelectPaymentsByDebitorAsync(SqlConnection connection, long paymentContext, string username, CancellationToken cancellationToken)
         {
             string sql = @"
 with d as (
@@ -253,8 +253,8 @@ order by
 
             List<JoinedPayment2DebitorDto> result = [];
 
-            await using SqlDataReader reader = await cmd.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
+            await using SqlDataReader reader = await cmd.ExecuteReaderAsync(cancellationToken);
+            while (await reader.ReadAsync(cancellationToken))
             {
                 JoinedPayment2DebitorDto joinedPayment2Debitor = ConvertDbToObject(reader);
                 result.Add(joinedPayment2Debitor);
@@ -263,7 +263,7 @@ order by
             return result;
         }
 
-        protected async Task<List<JoinedPayment2DebitorDto>> SelectPaymentsByAuthorAsync(SqlConnection connection, long paymentContext, string username)
+        protected async Task<List<JoinedPayment2DebitorDto>> SelectPaymentsByAuthorAsync(SqlConnection connection, long paymentContext, string username, CancellationToken cancellationToken)
         {
             string sql = @"
 with a as (
@@ -314,8 +314,8 @@ order by
 
             List<JoinedPayment2DebitorDto> result = [];
 
-            await using SqlDataReader reader = await cmd.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
+            await using SqlDataReader reader = await cmd.ExecuteReaderAsync(cancellationToken);
+            while (await reader.ReadAsync(cancellationToken))
             {
                 JoinedPayment2DebitorDto joinedPayment2Debitor = ConvertDbToObject(reader);
                 result.Add(joinedPayment2Debitor);
@@ -324,7 +324,7 @@ order by
             return result;
         }
 
-        protected async Task<long> MarkPaymentAsDeletedAsync(SqlConnection connection, long paymentContext, long paymentId)
+        protected async Task<long> MarkPaymentAsDeletedAsync(SqlConnection connection, long paymentContext, long paymentId, CancellationToken cancellationToken)
         {
             string sql = @"
 update
@@ -341,7 +341,7 @@ where
             cmd.Parameters.AddWithValue("@Id", paymentId);
             cmd.Parameters.AddWithValue("@PaymentContextIdFk", paymentContext);
 
-            return await cmd.ExecuteNonQueryAsync();
+            return await cmd.ExecuteNonQueryAsync(cancellationToken);
         }
 
         protected List<FullPaymentDto> MergeJoinedPayments(List<JoinedPayment2DebitorDto> joinedPayments)

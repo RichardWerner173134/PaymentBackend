@@ -7,13 +7,13 @@ namespace PaymentBackend.Database.DatabaseServices
 {
     public interface IPaymentDatabaseService
     {
-        Task<List<FullPaymentDto>> SelectAllPaymentsAsync(long paymentContext);
-        Task<FullPaymentDto?> SelectPaymentByIdAsync(long paymentContext, long id);
+        Task<List<FullPaymentDto>> SelectAllPaymentsAsync(long paymentContext, CancellationToken cancellationToken);
+        Task<FullPaymentDto?> SelectPaymentByIdAsync(long paymentContext, long id, CancellationToken cancellationToken);
 
-        Task<List<FullPaymentDto>> SelectPaymentsByCreditorAsync(long paymentContext, string username);
-        Task<List<FullPaymentDto>> SelectPaymentsByDebitorAsync(long paymentContext, string username);
-        Task<List<FullPaymentDto>> SelectPaymentsByAuthorAsync(long paymentContext, string username);
-        Task<long> MarkPaymentAsDeletedAsync(long paymentContext, long paymentId);
+        Task<List<FullPaymentDto>> SelectPaymentsByCreditorAsync(long paymentContext, string username, CancellationToken cancellationToken);
+        Task<List<FullPaymentDto>> SelectPaymentsByDebitorAsync(long paymentContext, string username, CancellationToken cancellationToken);
+        Task<List<FullPaymentDto>> SelectPaymentsByAuthorAsync(long paymentContext, string username, CancellationToken cancellationToken);
+        Task<long> MarkPaymentAsDeletedAsync(long paymentContext, long paymentId, CancellationToken cancellationToken);
     }
 
     public class PaymentDatabaseService : AbstractPaymentDatabaseService, IPaymentDatabaseService
@@ -26,13 +26,13 @@ namespace PaymentBackend.Database.DatabaseServices
         {
         }
 
-        public async Task<List<FullPaymentDto>> SelectAllPaymentsAsync(long paymentContext)
+        public async Task<List<FullPaymentDto>> SelectAllPaymentsAsync(long paymentContext, CancellationToken cancellationToken)
         {
             var connectionString = GetConnectionString();
             await using var connection = new SqlConnection(connectionString);
-            await connection.OpenAsync();
+            await connection.OpenAsync(cancellationToken);
 
-            var joinedP2d = await SelectAllPayment2DebitorsAsync(connection, paymentContext);
+            var joinedP2d = await SelectAllPayment2DebitorsAsync(connection, paymentContext, cancellationToken);
 
             var result = MergeJoinedPayments(joinedP2d);
 
@@ -40,13 +40,13 @@ namespace PaymentBackend.Database.DatabaseServices
             return result;
         }
 
-        public async Task<FullPaymentDto?> SelectPaymentByIdAsync(long paymentContext, long id)
+        public async Task<FullPaymentDto?> SelectPaymentByIdAsync(long paymentContext, long id, CancellationToken cancellationToken)
         {
             var connectionString = GetConnectionString();
             await using var connection = new SqlConnection(connectionString);
-            await connection.OpenAsync();
+            await connection.OpenAsync(cancellationToken);
 
-            var joinedP2d = await SelectPaymentByIdAsync(connection, paymentContext, id);
+            var joinedP2d = await SelectPaymentByIdAsync(connection, paymentContext, id, cancellationToken);
 
             var result = MergeJoinedPayments(joinedP2d).FirstOrDefault();
 
@@ -54,13 +54,13 @@ namespace PaymentBackend.Database.DatabaseServices
             return result;
         }
 
-        public async Task<List<FullPaymentDto>> SelectPaymentsByCreditorAsync(long paymentContext, string username)
+        public async Task<List<FullPaymentDto>> SelectPaymentsByCreditorAsync(long paymentContext, string username, CancellationToken cancellationToken)
         {
             var connectionString = GetConnectionString();
             await using var connection = new SqlConnection(connectionString);
-            await connection.OpenAsync();
+            await connection.OpenAsync(cancellationToken);
 
-            var joinedP2d = await SelectPaymentsByCreditorAsync(connection, paymentContext, username);
+            var joinedP2d = await SelectPaymentsByCreditorAsync(connection, paymentContext, username, cancellationToken);
 
             var result = MergeJoinedPayments(joinedP2d);
 
@@ -68,13 +68,13 @@ namespace PaymentBackend.Database.DatabaseServices
             return result;
         }
 
-        public async Task<List<FullPaymentDto>> SelectPaymentsByDebitorAsync(long paymentContext, string username)
+        public async Task<List<FullPaymentDto>> SelectPaymentsByDebitorAsync(long paymentContext, string username, CancellationToken cancellationToken)
         {
             var connectionString = GetConnectionString();
             await using var connection = new SqlConnection(connectionString);
-            await connection.OpenAsync();
+            await connection.OpenAsync(cancellationToken);
 
-            var joinedP2d = await SelectPaymentsByDebitorAsync(connection, paymentContext, username);
+            var joinedP2d = await SelectPaymentsByDebitorAsync(connection, paymentContext, username, cancellationToken);
 
             var result = MergeJoinedPayments(joinedP2d);
 
@@ -82,13 +82,13 @@ namespace PaymentBackend.Database.DatabaseServices
             return result;
         }
 
-        public async Task<List<FullPaymentDto>> SelectPaymentsByAuthorAsync(long paymentContext, string username)
+        public async Task<List<FullPaymentDto>> SelectPaymentsByAuthorAsync(long paymentContext, string username, CancellationToken cancellationToken)
         {
             var connectionString = GetConnectionString();
             await using var connection = new SqlConnection(connectionString);
-            await connection.OpenAsync();
+            await connection.OpenAsync(cancellationToken);
 
-            var joinedP2d = await SelectPaymentsByAuthorAsync(connection, paymentContext, username);
+            var joinedP2d = await SelectPaymentsByAuthorAsync(connection, paymentContext, username, cancellationToken);
 
             var result = MergeJoinedPayments(joinedP2d);
 
@@ -96,13 +96,13 @@ namespace PaymentBackend.Database.DatabaseServices
             return result;
         }
 
-        public async Task<long> MarkPaymentAsDeletedAsync(long paymentContext, long paymentId)
+        public async Task<long> MarkPaymentAsDeletedAsync(long paymentContext, long paymentId, CancellationToken cancellationToken)
         { 
             var connectionString = GetConnectionString();
             await using var connection = new SqlConnection(connectionString);
-            await connection.OpenAsync();
+            await connection.OpenAsync(cancellationToken);
 
-            var result = await MarkPaymentAsDeletedAsync(connection, paymentContext, paymentId);
+            var result = await MarkPaymentAsDeletedAsync(connection, paymentContext, paymentId, cancellationToken);
 
             await connection.CloseAsync();
             return result;

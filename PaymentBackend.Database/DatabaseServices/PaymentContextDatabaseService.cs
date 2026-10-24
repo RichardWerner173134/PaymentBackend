@@ -8,8 +8,8 @@ namespace PaymentBackend.Database.DatabaseServices
 {
     public interface IPaymentContextDatabaseService
     {
-        Task<List<PaymentContext>> SelectAllPaymentContextsAsync();
-        Task<PaymentContext?> SelectPaymentContextByIdAsync(long paymentContext);
+        Task<List<PaymentContext>> SelectAllPaymentContextsAsync(CancellationToken cancellationToken);
+        Task<PaymentContext?> SelectPaymentContextByIdAsync(long paymentContext, CancellationToken cancellationToken);
     }
 
     public class PaymentContextDatabaseService : AbstractDatabaseService, IPaymentContextDatabaseService
@@ -22,31 +22,31 @@ namespace PaymentBackend.Database.DatabaseServices
         {
         }
 
-        public async Task<List<PaymentContext>> SelectAllPaymentContextsAsync()
+        public async Task<List<PaymentContext>> SelectAllPaymentContextsAsync(CancellationToken cancellationToken)
         {
             var connectionString = GetConnectionString();
             await using var connection = new SqlConnection(connectionString);
-            await connection.OpenAsync();
+            await connection.OpenAsync(cancellationToken);
 
-            var result = await SelectAllPaymentContextsAsync(connection);
+            var result = await SelectAllPaymentContextsAsync(connection, cancellationToken);
             
             await connection.CloseAsync();
             return result;
         }
 
-        public async Task<PaymentContext?> SelectPaymentContextByIdAsync(long paymentContext)
+        public async Task<PaymentContext?> SelectPaymentContextByIdAsync(long paymentContext, CancellationToken cancellationToken)
         {
             var connectionString = GetConnectionString();
             await using var connection = new SqlConnection(connectionString);
-            await connection.OpenAsync();
+            await connection.OpenAsync(cancellationToken);
 
-            var result = await SelectPaymentContextByIdAsync(connection, paymentContext);
+            var result = await SelectPaymentContextByIdAsync(connection, paymentContext, cancellationToken);
 
             await connection.CloseAsync();
             return result;
         }
 
-        private async Task<List<PaymentContext>> SelectAllPaymentContextsAsync(SqlConnection connection)
+        private async Task<List<PaymentContext>> SelectAllPaymentContextsAsync(SqlConnection connection, CancellationToken cancellationToken)
         {
             string sql = @"
 select 
@@ -62,8 +62,8 @@ from
 
             List<PaymentContext> result = [];
 
-            await using SqlDataReader reader = await cmd1.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
+            await using SqlDataReader reader = await cmd1.ExecuteReaderAsync(cancellationToken);
+            while (await reader.ReadAsync(cancellationToken))
             {
                 var paymentContext = ConvertDbToObject(reader);
                 result.Add(paymentContext);
@@ -72,7 +72,7 @@ from
             return result;
         }
 
-        private async Task<PaymentContext?> SelectPaymentContextByIdAsync(SqlConnection connection, long paymentContext)
+        private async Task<PaymentContext?> SelectPaymentContextByIdAsync(SqlConnection connection, long paymentContext, CancellationToken cancellationToken)
         {
             string sql = @"
 select 
@@ -90,8 +90,8 @@ where
 
             cmd1.Parameters.AddWithValue("@PaymentContextId", paymentContext);
 
-            await using SqlDataReader reader = await cmd1.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
+            await using SqlDataReader reader = await cmd1.ExecuteReaderAsync(cancellationToken);
+            while (await reader.ReadAsync(cancellationToken))
             {
                 PaymentContext result = ConvertDbToObject(reader);
                 return result;

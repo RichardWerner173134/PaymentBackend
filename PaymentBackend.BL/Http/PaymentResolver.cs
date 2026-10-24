@@ -9,10 +9,10 @@ namespace PaymentBackend.BL.Http
 {
     public interface IPaymentResolver
     {
-        Task<HttpResponseData> GetPaymentsAsync(HttpRequestData req, long paymentContext);
-        Task<HttpResponseData> GetPaymentByIdAsync(HttpRequestData req, long paymentContext, long paymentId);
-        Task<HttpResponseData> ProcessNewPaymentAsync(HttpRequestData req, long paymentContext);
-        Task<HttpResponseData> DeletePaymentByIdAsync(HttpRequestData req, long paymentContext, long paymentId);
+        Task<HttpResponseData> GetPaymentsAsync(HttpRequestData req, long paymentContext, CancellationToken cancellationToken);
+        Task<HttpResponseData> GetPaymentByIdAsync(HttpRequestData req, long paymentContext, long paymentId, CancellationToken cancellationToken);
+        Task<HttpResponseData> ProcessNewPaymentAsync(HttpRequestData req, long paymentContext, CancellationToken cancellationToken);
+        Task<HttpResponseData> DeletePaymentByIdAsync(HttpRequestData req, long paymentContext, long paymentId, CancellationToken cancellationToken);
     }
 
     public class PaymentResolver : AbstractHttpResolver, IPaymentResolver
@@ -38,9 +38,9 @@ namespace PaymentBackend.BL.Http
             _logger = logger;
         }
 
-        public async Task<HttpResponseData> GetPaymentsAsync(HttpRequestData req, long paymentContext)
+        public async Task<HttpResponseData> GetPaymentsAsync(HttpRequestData req, long paymentContext, CancellationToken cancellationToken)
         {
-            var allPayments = await _paymentDbService.SelectAllPaymentsAsync(paymentContext);
+            var allPayments = await _paymentDbService.SelectAllPaymentsAsync(paymentContext, cancellationToken);
 
             var mappedPayments = allPayments.Select(payment => new Common.Generated.Payment
             {
@@ -59,12 +59,12 @@ namespace PaymentBackend.BL.Http
                 Payments = mappedPayments
             };
 
-            return await BuildOkResponseAsync(req, response);
+            return await BuildOkResponseAsync(req, response, cancellationToken);
         }
 
-        public async Task<HttpResponseData> GetPaymentByIdAsync(HttpRequestData req, long paymentContext, long paymentId)
+        public async Task<HttpResponseData> GetPaymentByIdAsync(HttpRequestData req, long paymentContext, long paymentId, CancellationToken cancellationToken)
         {
-            var resolvedPayment = await _paymentDbService.SelectPaymentByIdAsync(paymentContext, paymentId);
+            var resolvedPayment = await _paymentDbService.SelectPaymentByIdAsync(paymentContext, paymentId, cancellationToken);
 
             if (resolvedPayment == null)
             {
@@ -88,12 +88,12 @@ namespace PaymentBackend.BL.Http
                 Payments = new List<Common.Generated.Payment> { mappedPayment }
             };
 
-            return await BuildOkResponseAsync(req, response);
+            return await BuildOkResponseAsync(req, response, cancellationToken);
         }
 
-        public async Task<HttpResponseData> ProcessNewPaymentAsync(HttpRequestData req, long paymentContext)
+        public async Task<HttpResponseData> ProcessNewPaymentAsync(HttpRequestData req, long paymentContext, CancellationToken cancellationToken)
         {
-            var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            var requestBody = await new StreamReader(req.Body).ReadToEndAsync(cancellationToken);
             Common.Generated.PostPaymentRequest? postPayment;
             try
             {
@@ -107,7 +107,7 @@ namespace PaymentBackend.BL.Http
             catch (Exception e)
             {
                 _logger.LogError($"Bad request: " + e.Message);
-                return await BuildBadRequestResponseAsync(e, req);
+                return await BuildBadRequestResponseAsync(e, req, cancellationToken);
             }
 
             try
@@ -117,7 +117,7 @@ namespace PaymentBackend.BL.Http
             catch (PaymentValidationException e)
             {
                 _logger.LogError($"Validation failed for payment: {e.Message}");
-                return await BuildBadRequestResponseAsync(e, req);
+                return await BuildBadRequestResponseAsync(e, req, cancellationToken);
             }
 
             /*
@@ -126,17 +126,17 @@ namespace PaymentBackend.BL.Http
             Common.Model.Dto.InsertPaymentDto dto;
             try
             {
-                dto = await BuildInsertPaymentDtoAsync(paymentContext, postPayment);
+                dto = await BuildInsertPaymentDtoAsync(paymentContext, postPayment, cancellationToken);
             }
             catch (UserNotFoundException e)
             {
                 _logger.LogError($"User not found: " + e.Message);
-                return await BuildBadRequestResponseAsync(e, req);
+                return await BuildBadRequestResponseAsync(e, req, cancellationToken);
             }
             catch (PaymentContextNotFoundException e)
             {
                 _logger.LogError($"PaymentContext not found: {e.Message}");
-                return await BuildBadRequestResponseAsync(e, req);
+                return await BuildBadRequestResponseAsync(e, req, cancellationToken);
             }
 
             /*
@@ -146,36 +146,36 @@ namespace PaymentBackend.BL.Http
             long paymentId;
             try
             {
-                paymentId = await _postPaymentDbService.InsertPaymentAsync(dto);
+                paymentId = await _postPaymentDbService.InsertPaymentAsync(dto, cancellationToken);
             }
             catch (Exception e)
             {
                 _logger.LogError($"Unexpected Error: {e.Message}");
-                return await BuildInternalServerErrorResponseAsync(e, req);
+                return await BuildInternalServerErrorResponseAsync(e, req, cancellationToken);
             }
 
             return await BuildOkResponseAsync(req);
         }
 
-        public async Task<HttpResponseData> DeletePaymentByIdAsync(HttpRequestData req, long paymentContext, long paymentId)
+        public async Task<HttpResponseData> DeletePaymentByIdAsync(HttpRequestData req, long paymentContext, long paymentId, CancellationToken cancellationToken)
         {
-            Common.Model.Dto.FullPaymentDto? payment = await _paymentDbService.SelectPaymentByIdAsync(paymentContext, paymentId);
+            Common.Model.Dto.FullPaymentDto? payment = await _paymentDbService.SelectPaymentByIdAsync(paymentContext, paymentId, cancellationToken);
 
             if (payment == null)
             {
                 return await BuildNotFoundResponseAsync(req);
             }
 
-            await _paymentDbService.MarkPaymentAsDeletedAsync(paymentContext, paymentId);
+            await _paymentDbService.MarkPaymentAsDeletedAsync(paymentContext, paymentId, cancellationToken);
 
             return await BuildOkResponseAsync(req);
         }
 
 
-        private async Task<Common.Model.Dto.InsertPaymentDto> BuildInsertPaymentDtoAsync(long paymentContext, Common.Generated.PostPaymentRequest postPayment)
+        private async Task<Common.Model.Dto.InsertPaymentDto> BuildInsertPaymentDtoAsync(long paymentContext, Common.Generated.PostPaymentRequest postPayment, CancellationToken cancellationToken)
         {
             // resolve the payment context
-            Common.Model.PaymentContext? resolvedPaymentContext = await _paymentContextDatabaseService.SelectPaymentContextByIdAsync(paymentContext);
+            Common.Model.PaymentContext? resolvedPaymentContext = await _paymentContextDatabaseService.SelectPaymentContextByIdAsync(paymentContext, cancellationToken);
             if (resolvedPaymentContext == null)
             {
                 throw new PaymentContextNotFoundException($"Can´t resolve PaymentContext [{paymentContext}]");
@@ -187,14 +187,14 @@ namespace PaymentBackend.BL.Http
             }
 
             // resolve the author 
-            Common.Model.User? author = await _userDatabaseService.SelectUserByUsernameAsync(postPayment.Payment.Author);
+            Common.Model.User? author = await _userDatabaseService.SelectUserByUsernameAsync(postPayment.Payment.Author, cancellationToken);
             if (author == null)
             {
                 throw new UserNotFoundException($"Can´t resolve author [{postPayment.Payment.Author}].");
             }
 
             // resolve the creditor
-            Common.Model.User? creditor = await _userDatabaseService.SelectUserByUsernameAsync(postPayment.Payment.Creditor);
+            Common.Model.User? creditor = await _userDatabaseService.SelectUserByUsernameAsync(postPayment.Payment.Creditor, cancellationToken);
             if (creditor == null)
             {
                 throw new UserNotFoundException($"Can´t resolve author [{postPayment.Payment.Creditor}].");
@@ -204,7 +204,7 @@ namespace PaymentBackend.BL.Http
             List<Common.Model.User> debitors = [];
             foreach (var debitorUsername in postPayment.Payment.Debitors)
             {
-                Common.Model.User? debitor = await _userDatabaseService.SelectUserByUsernameAsync(debitorUsername);
+                Common.Model.User? debitor = await _userDatabaseService.SelectUserByUsernameAsync(debitorUsername, cancellationToken);
                 if (debitor == null)
                 {
                     throw new UserNotFoundException($"Can´t resolve a debitor [{debitorUsername}].");

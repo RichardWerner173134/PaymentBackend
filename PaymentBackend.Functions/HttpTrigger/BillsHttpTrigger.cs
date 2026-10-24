@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using PaymentBackend.BL.Http;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Azure.Functions.Worker;
@@ -17,38 +18,42 @@ namespace PaymentBackend.Functions.HttpTrigger
         [Function("GetBills")]
         public async Task<HttpResponseData> GetBillsAsync(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "paymentContexts/{paymentContext}/bills")] HttpRequestData req,
-            long paymentContext
+            long paymentContext,
+            CancellationToken cancellationToken
         )
         {
-            return await _resolver.GetAllBillsAsync(req, paymentContext);
+            return await _resolver.GetAllBillsAsync(req, paymentContext, cancellationToken);
         }
 
         [Function("GetBillsForUser")]
         public async Task<HttpResponseData> GetBillsForUserAsync(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "paymentContexts/{paymentContext}/bills/all/users/{username}")] HttpRequestData req,
             long paymentContext,
-            string username
+            string username,
+            CancellationToken cancellationToken
         )
         {
-            return await _resolver.GetBillsForUserAsync(req, paymentContext, username);
+            return await _resolver.GetBillsForUserAsync(req, paymentContext, username, cancellationToken);
         }
 
         [Function("GetBillOverviews")]
         public async Task<HttpResponseData> GetBillOverviewsAsync(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "paymentContexts/{paymentContext}/bill-overviews")] HttpRequestData req,
-            long paymentContext
+            long paymentContext,
+            CancellationToken cancellationToken
         )
         {
-            return await _resolver.GetAllBillOverviewsAsync(req, paymentContext);
+            return await _resolver.GetAllBillOverviewsAsync(req, paymentContext, cancellationToken);
         }
 
         [Function("GetBillOverviewForUser")]
         public async Task<HttpResponseData> GetBillOverviewForUserAsync(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "paymentContexts/{paymentContext}/bill-overviews/all/users/{username}")] HttpRequestData req,
             long paymentContext,
-            string username)
+            string username,
+            CancellationToken cancellationToken)
         {
-            return await _resolver.GetBillOverviewsForUserAsync(req, paymentContext, username);
+            return await _resolver.GetBillOverviewsForUserAsync(req, paymentContext, username, cancellationToken);
         }
     }
 }

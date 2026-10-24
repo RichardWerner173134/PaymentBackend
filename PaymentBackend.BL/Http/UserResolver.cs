@@ -5,7 +5,7 @@ namespace PaymentBackend.BL.Http
 {
     public interface IUserResolver
     {
-        Task<HttpResponseData> GetPaymentUsersAsync(HttpRequestData req);
+        Task<HttpResponseData> GetPaymentUsersAsync(HttpRequestData req, CancellationToken cancellationToken);
     }
 
     public class UserResolver : AbstractHttpResolver, IUserResolver
@@ -17,9 +17,9 @@ namespace PaymentBackend.BL.Http
             _userDbService = userDbService;
         }
 
-        public async Task<HttpResponseData> GetPaymentUsersAsync(HttpRequestData req)
+        public async Task<HttpResponseData> GetPaymentUsersAsync(HttpRequestData req, CancellationToken cancellationToken)
         {
-            var allUsers = await _userDbService.SelectAllUsersAsync();
+            var allUsers = await _userDbService.SelectAllUsersAsync(cancellationToken);
 
             List<Common.Generated.User> httpMappedUsers =
             [
@@ -37,7 +37,7 @@ namespace PaymentBackend.BL.Http
                 UserList = httpMappedUsers
             };
 
-            return await BuildOkResponseAsync(req, response);
+            return await BuildOkResponseAsync(req, response, cancellationToken);
         }
     }
 }

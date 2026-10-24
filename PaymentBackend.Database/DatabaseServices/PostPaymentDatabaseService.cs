@@ -8,7 +8,7 @@ namespace PaymentBackend.Database.DatabaseServices
 {
     public interface IPostPaymentDatabaseService
     {
-        Task<long> InsertPaymentAsync(InsertPaymentDto paymentDto);
+        Task<long> InsertPaymentAsync(InsertPaymentDto paymentDto, CancellationToken cancellationToken);
     }
 
     public class PostPaymentDatabaseService : AbstractDatabaseService, IPostPaymentDatabaseService
@@ -22,18 +22,18 @@ namespace PaymentBackend.Database.DatabaseServices
         {
         }
 
-        public async Task<long> InsertPaymentAsync(InsertPaymentDto paymentDto)
+        public async Task<long> InsertPaymentAsync(InsertPaymentDto paymentDto, CancellationToken cancellationToken)
         {
             var connectionString = GetConnectionString();
             await using var connection = new SqlConnection(connectionString);
-            await connection.OpenAsync();
+            await connection.OpenAsync(cancellationToken);
 
-            await using SqlTransaction transaction = (SqlTransaction)await connection.BeginTransactionAsync(IsolationLevel.RepeatableRead);
+            await using SqlTransaction transaction = (SqlTransaction)await connection.BeginTransactionAsync(IsolationLevel.RepeatableRead, cancellationToken);
             try
             {
-                var result = await InsertPaymentAsync(connection, transaction, paymentDto);
+                var result = await InsertPaymentAsync(connection, transaction, paymentDto, cancellationToken);
                 paymentDto.PaymentId = result;
-                await InsertPayment2UsersAsync(connection, transaction, paymentDto);
+                await InsertPayment2UsersAsync(connection, transaction, paymentDto, cancellationToken);
 
                 await transaction.CommitAsync();
                 return result;
@@ -50,7 +50,7 @@ namespace PaymentBackend.Database.DatabaseServices
             }
         }
 
-        private async Task<long> InsertPaymentAsync(SqlConnection connection, SqlTransaction transaction, InsertPaymentDto paymentDto)
+        private async Task<long> InsertPaymentAsync(SqlConnection connection, SqlTransaction transaction, InsertPaymentDto paymentDto, CancellationToken cancellationToken)
         {
             string sql = @"
 insert into Payments (CreditorIdFk, Price, PaymentDate, UpdateTime, Description, AuthorIdFk, IsDeleted, PaymentContextIdFk)
@@ -70,10 +70,10 @@ values (@CreditorIdFk, @Price, @PaymentDate, @UpdateTime, @Description, @AuthorI
             cmd.Parameters.Add("@PaymentDate", SqlDbType.DateTime2).Value = paymentDto.PaymentDate;
             cmd.Parameters.Add("@UpdateTime", SqlDbType.DateTime2).Value = paymentDto.UpdateTime;
 
-            return (long)(await cmd.ExecuteScalarAsync())!;
+            return (long)(await cmd.ExecuteScalarAsync(cancellationToken))!;
         }
 
-        private async Task InsertPayment2UsersAsync(SqlConnection connection, SqlTransaction transaction, InsertPaymentDto paymentDto)
+        private async Task InsertPayment2UsersAsync(SqlConnection connection, SqlTransaction transaction, InsertPaymentDto paymentDto, CancellationToken cancellationToken)
         {
             string sql = @"
 insert into Payment2Debitor (DebitorIdFk, PaymentIdFk)
@@ -95,7 +95,7 @@ values
                 cmd.Parameters.AddWithValue("@DebitorIdFk" + index, paymentDto.Debitors[index].Id);
             }
 
-            await cmd.ExecuteNonQueryAsync();
+            await cmd.ExecuteNonQueryAsync(cancellationToken);
         }
     }
 }

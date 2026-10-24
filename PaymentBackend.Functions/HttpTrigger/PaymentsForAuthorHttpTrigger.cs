@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Threading.Tasks;
 using PaymentBackend.BL.Http;
 using Microsoft.Azure.Functions.Worker.Http;
@@ -19,10 +20,11 @@ namespace PaymentBackend.Functions.HttpTrigger
         public async Task<HttpResponseData> GetPaymentsForAuthorAsync(
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = "paymentContexts/{paymentContext}/payments-for-author/{username}")] HttpRequestData req,
             long paymentContext,
-            string username
+            string username,
+            CancellationToken cancellationToken
         )
         {
-            return await _resolver.GetPaymentsForAuthorAsync(req, paymentContext, username);
+            return await _resolver.GetPaymentsForAuthorAsync(req, paymentContext, username, cancellationToken);
         }
     }
 }

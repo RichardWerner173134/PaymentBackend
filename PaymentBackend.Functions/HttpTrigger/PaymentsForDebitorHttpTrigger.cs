@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Threading.Tasks;
 using PaymentBackend.BL.Http;
 using Microsoft.Azure.Functions.Worker.Http;
@@ -19,20 +20,22 @@ namespace PaymentBackend.Functions.HttpTrigger
         public Task<HttpResponseData> GetPaymentsForDebitorAsync(
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = "paymentContexts/{paymentContext}/payments-for-debitor/{username}")] HttpRequestData req,
             long paymentContext, 
-            string username
+            string username,
+            CancellationToken cancellationToken
         )
         {
-            return _resolver.GetPaymentsForDebitorAsync(req, paymentContext, username);
+            return _resolver.GetPaymentsForDebitorAsync(req, paymentContext, username, cancellationToken);
         }
 
         [Function("GetPaymentOverviewForDebitor")]
         public Task<HttpResponseData> GetPaymentOverviewForDebitorAsync(
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = "paymentContexts/{paymentContext}/payment-overview-for-debitor/{username}")] HttpRequestData req,
             long paymentContext,
-            string username
+            string username,
+            CancellationToken cancellationToken
         )
         {
-            return _resolver.GetPaymentOverviewForDebitorAsync(req, paymentContext, username);
+            return _resolver.GetPaymentOverviewForDebitorAsync(req, paymentContext, username, cancellationToken);
         }
     }
 }

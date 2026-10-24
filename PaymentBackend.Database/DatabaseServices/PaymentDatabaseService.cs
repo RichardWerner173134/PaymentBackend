@@ -7,13 +7,13 @@ namespace PaymentBackend.Database.DatabaseServices
 {
     public interface IPaymentDatabaseService
     {
-        List<FullPaymentDto> SelectAllPayments(long paymentContext);
-        FullPaymentDto? SelectPaymentById(long paymentContext, long id);
+        Task<List<FullPaymentDto>> SelectAllPaymentsAsync(long paymentContext);
+        Task<FullPaymentDto?> SelectPaymentByIdAsync(long paymentContext, long id);
 
-        List<FullPaymentDto> SelectPaymentsByCreditor(long paymentContext, string username);
-        List<FullPaymentDto> SelectPaymentsByDebitor(long paymentContext, string username);
-        List<FullPaymentDto> SelectPaymentsByAuthor(long paymentContext, string username);
-        long MarkPaymentAsDeleted(long paymentContext, long paymentId);
+        Task<List<FullPaymentDto>> SelectPaymentsByCreditorAsync(long paymentContext, string username);
+        Task<List<FullPaymentDto>> SelectPaymentsByDebitorAsync(long paymentContext, string username);
+        Task<List<FullPaymentDto>> SelectPaymentsByAuthorAsync(long paymentContext, string username);
+        Task<long> MarkPaymentAsDeletedAsync(long paymentContext, long paymentId);
     }
 
     public class PaymentDatabaseService : AbstractPaymentDatabaseService, IPaymentDatabaseService
@@ -26,85 +26,85 @@ namespace PaymentBackend.Database.DatabaseServices
         {
         }
 
-        public List<FullPaymentDto> SelectAllPayments(long paymentContext)
+        public async Task<List<FullPaymentDto>> SelectAllPaymentsAsync(long paymentContext)
         {
             var connectionString = GetConnectionString();
-            using var connection = new SqlConnection(connectionString);
-            connection.Open();
+            await using var connection = new SqlConnection(connectionString);
+            await connection.OpenAsync();
 
-            var joinedP2d = SelectAllPayment2Debitors(connection, paymentContext);
+            var joinedP2d = await SelectAllPayment2DebitorsAsync(connection, paymentContext);
 
             var result = MergeJoinedPayments(joinedP2d);
 
-            connection.Close();
+            await connection.CloseAsync();
             return result;
         }
 
-        public FullPaymentDto? SelectPaymentById(long paymentContext, long id)
+        public async Task<FullPaymentDto?> SelectPaymentByIdAsync(long paymentContext, long id)
         {
             var connectionString = GetConnectionString();
-            using var connection = new SqlConnection(connectionString);
-            connection.Open();
+            await using var connection = new SqlConnection(connectionString);
+            await connection.OpenAsync();
 
-            var joinedP2d = SelectPaymentById(connection, paymentContext, id);
+            var joinedP2d = await SelectPaymentByIdAsync(connection, paymentContext, id);
 
             var result = MergeJoinedPayments(joinedP2d).FirstOrDefault();
 
-            connection.Close();
+            await connection.CloseAsync();
             return result;
         }
 
-        public List<FullPaymentDto> SelectPaymentsByCreditor(long paymentContext, string username)
+        public async Task<List<FullPaymentDto>> SelectPaymentsByCreditorAsync(long paymentContext, string username)
         {
             var connectionString = GetConnectionString();
-            using var connection = new SqlConnection(connectionString);
-            connection.Open();
+            await using var connection = new SqlConnection(connectionString);
+            await connection.OpenAsync();
 
-            var joinedP2d = SelectPaymentsByCreditor(connection, paymentContext, username);
+            var joinedP2d = await SelectPaymentsByCreditorAsync(connection, paymentContext, username);
 
             var result = MergeJoinedPayments(joinedP2d);
 
-            connection.Close();
+            await connection.CloseAsync();
             return result;
         }
 
-        public List<FullPaymentDto> SelectPaymentsByDebitor(long paymentContext, string username)
+        public async Task<List<FullPaymentDto>> SelectPaymentsByDebitorAsync(long paymentContext, string username)
         {
             var connectionString = GetConnectionString();
-            using var connection = new SqlConnection(connectionString);
-            connection.Open();
+            await using var connection = new SqlConnection(connectionString);
+            await connection.OpenAsync();
 
-            var joinedP2d = SelectPaymentsByDebitor(connection, paymentContext, username);
+            var joinedP2d = await SelectPaymentsByDebitorAsync(connection, paymentContext, username);
 
             var result = MergeJoinedPayments(joinedP2d);
 
-            connection.Close();
+            await connection.CloseAsync();
             return result;
         }
 
-        public List<FullPaymentDto> SelectPaymentsByAuthor(long paymentContext, string username)
+        public async Task<List<FullPaymentDto>> SelectPaymentsByAuthorAsync(long paymentContext, string username)
         {
             var connectionString = GetConnectionString();
-            using var connection = new SqlConnection(connectionString);
-            connection.Open();
+            await using var connection = new SqlConnection(connectionString);
+            await connection.OpenAsync();
 
-            var joinedP2d = SelectPaymentsByAuthor(connection, paymentContext, username);
+            var joinedP2d = await SelectPaymentsByAuthorAsync(connection, paymentContext, username);
 
             var result = MergeJoinedPayments(joinedP2d);
 
-            connection.Close();
+            await connection.CloseAsync();
             return result;
         }
 
-        public long MarkPaymentAsDeleted(long paymentContext, long paymentId)
+        public async Task<long> MarkPaymentAsDeletedAsync(long paymentContext, long paymentId)
         { 
             var connectionString = GetConnectionString();
-            using var connection = new SqlConnection(connectionString);
-            connection.Open();
+            await using var connection = new SqlConnection(connectionString);
+            await connection.OpenAsync();
 
-            var result = MarkPaymentAsDeleted(connection, paymentContext, paymentId);
+            var result = await MarkPaymentAsDeletedAsync(connection, paymentContext, paymentId);
 
-            connection.Close();
+            await connection.CloseAsync();
             return result;
         }
     }

@@ -40,7 +40,7 @@ namespace PaymentBackend.Common.Test.Model
             {
                 Id = 1,
                 Creditor = creditor,
-                Debitors = new List<string> { creditor, debitor },
+                Debitors = [creditor, debitor],
                 Price = 42,
                 PaymentContextIsClosed = false
                 // ... other fields dont matter
@@ -50,7 +50,7 @@ namespace PaymentBackend.Common.Test.Model
             {
                 Id = 2,
                 Creditor = creditor,
-                Debitors = new List<string> { creditor, debitor },
+                Debitors = [creditor, debitor],
                 Price = 24,
                 PaymentContextIsClosed = false
                 // ... other fields dont matter
@@ -108,7 +108,7 @@ namespace PaymentBackend.Common.Test.Model
             {
                 Id = 1,
                 Creditor = creditor,
-                Debitors = new List<string> { creditor, debitor },
+                Debitors = [creditor, debitor],
                 Price = 42,
                 PaymentContextIsClosed = false
                 // ... other fields dont matter
@@ -118,7 +118,7 @@ namespace PaymentBackend.Common.Test.Model
             {
                 Id = 1, // must be the same as the Id of payment1
                 Creditor = creditor,
-                Debitors = new List<string> { creditor, debitor },
+                Debitors = [creditor, debitor],
                 Price = 24,
                 PaymentContextIsClosed = false
                 // ... other fields dont matter
@@ -155,7 +155,7 @@ namespace PaymentBackend.Common.Test.Model
             {
                 Id = 1,
                 Creditor = creditor,
-                Debitors = new List<string> { debitor },
+                Debitors = [debitor],
                 Price = 42,
                 PaymentContextIsClosed = false
                 // ... other fields dont matter
@@ -165,7 +165,7 @@ namespace PaymentBackend.Common.Test.Model
             {
                 Id = 2,
                 Creditor = debitor,
-                Debitors = new List<string> { creditor},
+                Debitors = [creditor],
                 Price = (decimal)42.01,
                 PaymentContextIsClosed = false
                 // ... other fields dont matter
@@ -209,7 +209,7 @@ namespace PaymentBackend.Common.Test.Model
             {
                 Id = 1,
                 Creditor = creditor,
-                Debitors = new List<string> { creditor, debitor },
+                Debitors = [creditor, debitor],
                 Price = 42,
                 PaymentContextIsClosed = false
                 // ... other fields dont matter
@@ -219,7 +219,7 @@ namespace PaymentBackend.Common.Test.Model
             {
                 Id = 1, // must be the same as the Id of payment1
                 Creditor = creditor,
-                Debitors = new List<string> { creditor, debitor },
+                Debitors = [creditor, debitor],
                 Price = 24,
                 PaymentContextIsClosed = false
                 // ... other fields dont matter

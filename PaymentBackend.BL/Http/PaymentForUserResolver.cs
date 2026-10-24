@@ -31,18 +31,21 @@ namespace PaymentBackend.BL.Http
         {
             username = username.ToLower();
             
-            List<Common.Model.Dto.FullPaymentDto> result = _paymentsDatabaseService.SelectPaymentsByDebitor(paymentContext, username);
-            List<Common.Generated.Payment> mappedPayments = result.Select(payment => new Common.Generated.Payment()
-            {
-                PaymentId = payment.Id,
-                Price = decimal.ToDouble(payment.Price),
-                Creditor = payment.Creditor,
-                Debitors = payment.Debitors,
-                Author = payment.Author,
-                PaymentDate = payment.PaymentDate,
-                UpdateTime = payment.UpdateTime,
-                PaymentDescription = payment.PaymentDescription
-            }).ToList();
+            List<Common.Model.Dto.FullPaymentDto> result = await _paymentsDatabaseService.SelectPaymentsByDebitorAsync(paymentContext, username);
+            List<Common.Generated.Payment> mappedPayments =
+            [
+                .. result.Select(payment => new Common.Generated.Payment
+                {
+                    PaymentId = payment.Id,
+                    Price = decimal.ToDouble(payment.Price),
+                    Creditor = payment.Creditor,
+                    Debitors = payment.Debitors,
+                    Author = payment.Author,
+                    PaymentDate = payment.PaymentDate,
+                    UpdateTime = payment.UpdateTime,
+                    PaymentDescription = payment.PaymentDescription
+                })
+            ];
 
             Common.Generated.GetPaymentsForDebitorResponse response = new()
             {
@@ -56,18 +59,21 @@ namespace PaymentBackend.BL.Http
         {
             username = username.ToLower();
             
-            List<Common.Model.Dto.FullPaymentDto> result = _paymentsDatabaseService.SelectPaymentsByCreditor(paymentContext, username);
-            List<Common.Generated.Payment> mappedPayments = result.Select(payment => new Common.Generated.Payment()
-            {
-                PaymentId = payment.Id,
-                Price = decimal.ToDouble(payment.Price),
-                Creditor = payment.Creditor,
-                Debitors = payment.Debitors,
-                Author = payment.Author,
-                PaymentDate = payment.PaymentDate,
-                UpdateTime = payment.UpdateTime,
-                PaymentDescription = payment.PaymentDescription
-            }).ToList();
+            List<Common.Model.Dto.FullPaymentDto> result = await _paymentsDatabaseService.SelectPaymentsByCreditorAsync(paymentContext, username);
+            List<Common.Generated.Payment> mappedPayments =
+            [
+                .. result.Select(payment => new Common.Generated.Payment
+                {
+                    PaymentId = payment.Id,
+                    Price = decimal.ToDouble(payment.Price),
+                    Creditor = payment.Creditor,
+                    Debitors = payment.Debitors,
+                    Author = payment.Author,
+                    PaymentDate = payment.PaymentDate,
+                    UpdateTime = payment.UpdateTime,
+                    PaymentDescription = payment.PaymentDescription
+                })
+            ];
 
             Common.Generated.GetPaymentsForDebitorResponse response = new()
             {
@@ -81,18 +87,21 @@ namespace PaymentBackend.BL.Http
         {
             username = username.ToLower();
             
-            List<Common.Model.Dto.FullPaymentDto> result = _paymentsDatabaseService.SelectPaymentsByAuthor(paymentContext, username);
-            List<Common.Generated.Payment> mappedPayments = result.Select(payment => new Common.Generated.Payment()
-            {
-                PaymentId = payment.Id,
-                Price = decimal.ToDouble(payment.Price),
-                Creditor = payment.Creditor,
-                Debitors = payment.Debitors,
-                Author = payment.Author,
-                PaymentDate = payment.PaymentDate,
-                UpdateTime = payment.UpdateTime,
-                PaymentDescription = payment.PaymentDescription
-            }).ToList();
+            List<Common.Model.Dto.FullPaymentDto> result = await _paymentsDatabaseService.SelectPaymentsByAuthorAsync(paymentContext, username);
+            List<Common.Generated.Payment> mappedPayments =
+            [
+                .. result.Select(payment => new Common.Generated.Payment
+                {
+                    PaymentId = payment.Id,
+                    Price = decimal.ToDouble(payment.Price),
+                    Creditor = payment.Creditor,
+                    Debitors = payment.Debitors,
+                    Author = payment.Author,
+                    PaymentDate = payment.PaymentDate,
+                    UpdateTime = payment.UpdateTime,
+                    PaymentDescription = payment.PaymentDescription
+                })
+            ];
 
             Common.Generated.GetPaymentsForAuthorResponse response = new()
             {
@@ -107,20 +116,23 @@ namespace PaymentBackend.BL.Http
             username = username.ToLower();
             
             DateTime calculationTime = DateTime.Now;
-            List<Common.Model.Dto.FullPaymentDto> allPayments = _paymentsDatabaseService.SelectPaymentsByDebitor(paymentContext, username);
+            List<Common.Model.Dto.FullPaymentDto> allPayments = await _paymentsDatabaseService.SelectPaymentsByDebitorAsync(paymentContext, username);
             Common.Model.PaymentOverviewForDebitor paymentOverviewForDebitor = _paymentOverviewCalculator.GetPaymentOverviewForDebitor(allPayments, username);
-            List<Common.Generated.Payment> mappedPayments = paymentOverviewForDebitor.Payments
-                .Select(payment => new Common.Generated.Payment()
-                {
-                    PaymentId = payment.Id,
-                    Price = decimal.ToDouble(payment.Price),
-                    Creditor = payment.Creditor,
-                    Debitors = payment.Debitors,
-                    Author = payment.Author,
-                    PaymentDate = payment.PaymentDate,
-                    UpdateTime = payment.UpdateTime,
-                    PaymentDescription = payment.PaymentDescription
-                }).ToList();
+            List<Common.Generated.Payment> mappedPayments =
+            [
+                .. paymentOverviewForDebitor.Payments
+                    .Select(payment => new Common.Generated.Payment
+                    {
+                        PaymentId = payment.Id,
+                        Price = decimal.ToDouble(payment.Price),
+                        Creditor = payment.Creditor,
+                        Debitors = payment.Debitors,
+                        Author = payment.Author,
+                        PaymentDate = payment.PaymentDate,
+                        UpdateTime = payment.UpdateTime,
+                        PaymentDescription = payment.PaymentDescription
+                    })
+            ];
 
             Common.Generated.GetPaymentOverviewForDebitorResponse response = new()
             {
@@ -137,20 +149,23 @@ namespace PaymentBackend.BL.Http
             username = username.ToLower();
             
             DateTime calculationTime = DateTime.Now;
-            List<Common.Model.Dto.FullPaymentDto> allPayments = _paymentsDatabaseService.SelectPaymentsByCreditor(paymentContext, username);
+            List<Common.Model.Dto.FullPaymentDto> allPayments = await _paymentsDatabaseService.SelectPaymentsByCreditorAsync(paymentContext, username);
             Common.Model.PaymentOverviewForCreditor paymentOverviewForCreditor = _paymentOverviewCalculator.GetPaymentOverviewForCreditor(allPayments, username);
-            List<Common.Generated.Payment> mappedPayments = paymentOverviewForCreditor.Payments
-                .Select(payment => new Common.Generated.Payment()
-                {
-                    PaymentId = payment.Id,
-                    Price = decimal.ToDouble(payment.Price),
-                    Creditor = payment.Creditor,
-                    Debitors = payment.Debitors,
-                    Author = payment.Author,
-                    PaymentDate = payment.PaymentDate,
-                    UpdateTime = payment.UpdateTime,
-                    PaymentDescription = payment.PaymentDescription
-                }).ToList();
+            List<Common.Generated.Payment> mappedPayments =
+            [
+                .. paymentOverviewForCreditor.Payments
+                    .Select(payment => new Common.Generated.Payment
+                    {
+                        PaymentId = payment.Id,
+                        Price = decimal.ToDouble(payment.Price),
+                        Creditor = payment.Creditor,
+                        Debitors = payment.Debitors,
+                        Author = payment.Author,
+                        PaymentDate = payment.PaymentDate,
+                        UpdateTime = payment.UpdateTime,
+                        PaymentDescription = payment.PaymentDescription
+                    })
+            ];
 
             Common.Generated.GetPaymentOverviewForCreditorResponse response = new()
             {

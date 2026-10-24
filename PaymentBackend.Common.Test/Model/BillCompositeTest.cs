@@ -12,7 +12,7 @@ namespace PaymentBackend.Common.Test.Model
             // Arrange
             FullPaymentDto payment = new()
             {
-                Debitors = new List<string>() { "d1", "d2" },
+                Debitors = ["d1", "d2"],
                 Price = (decimal)42.9,
                 PaymentContextIsClosed = false
             };
@@ -32,7 +32,7 @@ namespace PaymentBackend.Common.Test.Model
             // Arrange
             FullPaymentDto payment = new()
             {
-                Debitors = new List<string>() { "d1", "d2" },
+                Debitors = ["d1", "d2"],
                 Price = (decimal)42.9,
                 PaymentContextIsClosed = false
             };
@@ -52,7 +52,7 @@ namespace PaymentBackend.Common.Test.Model
             // Arrange
             FullPaymentDto payment = new()
             {
-                Debitors = new List<string>() { "d1", "d2" },
+                Debitors = ["d1", "d2"],
                 Price = (decimal)42.9,
                 PaymentContextIsClosed = false
             };

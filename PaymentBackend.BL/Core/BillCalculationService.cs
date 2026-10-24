@@ -13,7 +13,7 @@ namespace PaymentBackend.BL.Core
     {
         public List<Bill> GetBills(List<FullPaymentDto> payments)
         {
-            List<Bill> result = new();
+            List<Bill> result = [];
 
             foreach (var payment in payments)
             {

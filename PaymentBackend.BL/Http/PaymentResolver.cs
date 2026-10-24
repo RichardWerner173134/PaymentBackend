@@ -40,9 +40,9 @@ namespace PaymentBackend.BL.Http
 
         public async Task<HttpResponseData> GetPaymentsAsync(HttpRequestData req, long paymentContext)
         {
-            var allPayments = _paymentDbService.SelectAllPayments(paymentContext);
+            var allPayments = await _paymentDbService.SelectAllPaymentsAsync(paymentContext);
 
-            var mappedPayments = allPayments.Select(payment => new Common.Generated.Payment()
+            var mappedPayments = allPayments.Select(payment => new Common.Generated.Payment
             {
                 PaymentId = payment.Id,
                 Price = decimal.ToDouble(payment.Price),
@@ -64,14 +64,14 @@ namespace PaymentBackend.BL.Http
 
         public async Task<HttpResponseData> GetPaymentByIdAsync(HttpRequestData req, long paymentContext, long paymentId)
         {
-            var resolvedPayment = _paymentDbService.SelectPaymentById(paymentContext, paymentId);
+            var resolvedPayment = await _paymentDbService.SelectPaymentByIdAsync(paymentContext, paymentId);
 
             if (resolvedPayment == null)
             {
                 return await BuildNotFoundResponseAsync(req);
             }
 
-            var mappedPayment = new Common.Generated.Payment()
+            var mappedPayment = new Common.Generated.Payment
             {
                 PaymentId = resolvedPayment.Id,
                 Price = decimal.ToDouble(resolvedPayment.Price),
@@ -85,7 +85,7 @@ namespace PaymentBackend.BL.Http
 
             Common.Generated.GetPaymentsResponse response = new()
             {
-                Payments = new List<Common.Generated.Payment>() { mappedPayment }
+                Payments = new List<Common.Generated.Payment> { mappedPayment }
             };
 
             return await BuildOkResponseAsync(req, response);
@@ -126,7 +126,7 @@ namespace PaymentBackend.BL.Http
             Common.Model.Dto.InsertPaymentDto dto;
             try
             {
-                dto = BuildInsertPaymentDto(paymentContext, postPayment);
+                dto = await BuildInsertPaymentDtoAsync(paymentContext, postPayment);
             }
             catch (UserNotFoundException e)
             {
@@ -146,7 +146,7 @@ namespace PaymentBackend.BL.Http
             long paymentId;
             try
             {
-                paymentId = _postPaymentDbService.InsertPayment(dto);
+                paymentId = await _postPaymentDbService.InsertPaymentAsync(dto);
             }
             catch (Exception e)
             {
@@ -159,23 +159,23 @@ namespace PaymentBackend.BL.Http
 
         public async Task<HttpResponseData> DeletePaymentByIdAsync(HttpRequestData req, long paymentContext, long paymentId)
         {
-            Common.Model.Dto.FullPaymentDto? payment = _paymentDbService.SelectPaymentById(paymentContext, paymentId);
+            Common.Model.Dto.FullPaymentDto? payment = await _paymentDbService.SelectPaymentByIdAsync(paymentContext, paymentId);
 
             if (payment == null)
             {
                 return await BuildNotFoundResponseAsync(req);
             }
 
-            _paymentDbService.MarkPaymentAsDeleted(paymentContext, paymentId);
+            await _paymentDbService.MarkPaymentAsDeletedAsync(paymentContext, paymentId);
 
             return await BuildOkResponseAsync(req);
         }
 
 
-        private Common.Model.Dto.InsertPaymentDto BuildInsertPaymentDto(long paymentContext, Common.Generated.PostPaymentRequest postPayment)
+        private async Task<Common.Model.Dto.InsertPaymentDto> BuildInsertPaymentDtoAsync(long paymentContext, Common.Generated.PostPaymentRequest postPayment)
         {
             // resolve the payment context
-            Common.Model.PaymentContext? resolvedPaymentContext = _paymentContextDatabaseService.SelectPaymentContextById(paymentContext);
+            Common.Model.PaymentContext? resolvedPaymentContext = await _paymentContextDatabaseService.SelectPaymentContextByIdAsync(paymentContext);
             if (resolvedPaymentContext == null)
             {
                 throw new PaymentContextNotFoundException($"Can´t resolve PaymentContext [{paymentContext}]");
@@ -187,24 +187,24 @@ namespace PaymentBackend.BL.Http
             }
 
             // resolve the author 
-            Common.Model.User? author = _userDatabaseService.SelectUserByUsername(postPayment.Payment.Author);
+            Common.Model.User? author = await _userDatabaseService.SelectUserByUsernameAsync(postPayment.Payment.Author);
             if (author == null)
             {
                 throw new UserNotFoundException($"Can´t resolve author [{postPayment.Payment.Author}].");
             }
 
             // resolve the creditor
-            Common.Model.User? creditor = _userDatabaseService.SelectUserByUsername(postPayment.Payment.Creditor);
+            Common.Model.User? creditor = await _userDatabaseService.SelectUserByUsernameAsync(postPayment.Payment.Creditor);
             if (creditor == null)
             {
                 throw new UserNotFoundException($"Can´t resolve author [{postPayment.Payment.Creditor}].");
             }
 
             // resolve all debitors
-            List<Common.Model.User> debitors = new();
+            List<Common.Model.User> debitors = [];
             foreach (var debitorUsername in postPayment.Payment.Debitors)
             {
-                Common.Model.User? debitor = _userDatabaseService.SelectUserByUsername(debitorUsername);
+                Common.Model.User? debitor = await _userDatabaseService.SelectUserByUsernameAsync(debitorUsername);
                 if (debitor == null)
                 {
                     throw new UserNotFoundException($"Can´t resolve a debitor [{debitorUsername}].");

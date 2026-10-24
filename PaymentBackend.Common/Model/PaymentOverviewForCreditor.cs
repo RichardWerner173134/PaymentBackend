@@ -4,7 +4,7 @@ namespace PaymentBackend.Common.Model
 {
     public class PaymentOverviewForCreditor
     {
-        public List<FullPaymentDto> Payments { get; set; } = new List<FullPaymentDto>();
+        public List<FullPaymentDto> Payments { get; set; } = [];
 
         public double TotalWithCreditor { get; set; } = 0.0;
 

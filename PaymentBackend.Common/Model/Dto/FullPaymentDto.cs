@@ -8,7 +8,7 @@
         
         public string Creditor { get; set; } = string.Empty;
 
-        public List<string> Debitors { get; set; } = new();
+        public List<string> Debitors { get; set; } = [];
 
         public string Author { get; set; } = string.Empty;
 

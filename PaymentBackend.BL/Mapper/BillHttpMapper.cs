@@ -17,12 +17,12 @@
 
         public List<Common.Generated.Bill> MapBills(List<Common.Model.Bill> internalBills)
         {
-            return internalBills.Select(MapBill).ToList();
+            return [.. internalBills.Select(MapBill)];
         }
 
         public List<Common.Generated.ShortBill> MapShortBills(List<Common.Model.Bill> internalBills)
         {
-            return internalBills.Select(MapShortBill).ToList();
+            return [.. internalBills.Select(MapShortBill)];
         }
 
         private Common.Generated.Bill MapBill(Common.Model.Bill bill)
@@ -56,7 +56,7 @@
 
         private List<Common.Generated.BillComposite> MapBillComposites(List<Common.Model.BillComposite> composites)
         {
-            List<Common.Generated.BillComposite> result = new();
+            List<Common.Generated.BillComposite> result = [];
 
             foreach (var composite in composites)
             {

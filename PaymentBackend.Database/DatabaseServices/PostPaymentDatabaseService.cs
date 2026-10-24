@@ -8,7 +8,7 @@ namespace PaymentBackend.Database.DatabaseServices
 {
     public interface IPostPaymentDatabaseService
     {
-        long InsertPayment(InsertPaymentDto paymentDto);
+        Task<long> InsertPaymentAsync(InsertPaymentDto paymentDto);
     }
 
     public class PostPaymentDatabaseService : AbstractDatabaseService, IPostPaymentDatabaseService
@@ -22,35 +22,35 @@ namespace PaymentBackend.Database.DatabaseServices
         {
         }
 
-        public long InsertPayment(InsertPaymentDto paymentDto)
+        public async Task<long> InsertPaymentAsync(InsertPaymentDto paymentDto)
         {
             var connectionString = GetConnectionString();
-            using var connection = new SqlConnection(connectionString);
-            connection.Open();
+            await using var connection = new SqlConnection(connectionString);
+            await connection.OpenAsync();
 
-            SqlTransaction transaction = connection.BeginTransaction(IsolationLevel.RepeatableRead);
+            await using SqlTransaction transaction = (SqlTransaction)await connection.BeginTransactionAsync(IsolationLevel.RepeatableRead);
             try
             {
-                var result = InsertPayment(connection, transaction, paymentDto);
+                var result = await InsertPaymentAsync(connection, transaction, paymentDto);
                 paymentDto.PaymentId = result;
-                InsertPayment2Users(connection, transaction, paymentDto);
+                await InsertPayment2UsersAsync(connection, transaction, paymentDto);
 
-                transaction.Commit();
+                await transaction.CommitAsync();
                 return result;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                transaction.Rollback();
+                await transaction.RollbackAsync();
                 throw;
             }
             finally
             {
-                connection.Close();
+                await connection.CloseAsync();
             }
         }
 
-        private long InsertPayment(SqlConnection connection, SqlTransaction transaction, InsertPaymentDto paymentDto)
+        private async Task<long> InsertPaymentAsync(SqlConnection connection, SqlTransaction transaction, InsertPaymentDto paymentDto)
         {
             string sql = @"
 insert into Payments (CreditorIdFk, Price, PaymentDate, UpdateTime, Description, AuthorIdFk, IsDeleted, PaymentContextIdFk)
@@ -58,7 +58,7 @@ OUTPUT INSERTED.ID
 values (@CreditorIdFk, @Price, @PaymentDate, @UpdateTime, @Description, @AuthorIdFk, @IsDeleted, @PaymentContextIdFk)
 ";
 
-            using SqlCommand cmd = new(sql, connection, transaction);
+            await using SqlCommand cmd = new(sql, connection, transaction);
             cmd.CommandType = CommandType.Text;
 
             cmd.Parameters.AddWithValue("@Price", paymentDto.Price);
@@ -70,10 +70,10 @@ values (@CreditorIdFk, @Price, @PaymentDate, @UpdateTime, @Description, @AuthorI
             cmd.Parameters.Add("@PaymentDate", SqlDbType.DateTime2).Value = paymentDto.PaymentDate;
             cmd.Parameters.Add("@UpdateTime", SqlDbType.DateTime2).Value = paymentDto.UpdateTime;
 
-            return (long)cmd.ExecuteScalar();
+            return (long)(await cmd.ExecuteScalarAsync())!;
         }
 
-        private void InsertPayment2Users(SqlConnection connection, SqlTransaction transaction, InsertPaymentDto paymentDto)
+        private async Task InsertPayment2UsersAsync(SqlConnection connection, SqlTransaction transaction, InsertPaymentDto paymentDto)
         {
             string sql = @"
 insert into Payment2Debitor (DebitorIdFk, PaymentIdFk)
@@ -87,7 +87,7 @@ values
 
             string fullInsertStatement = sql + valueStatement;
 
-            using SqlCommand cmd = new(fullInsertStatement, connection, transaction);
+            await using SqlCommand cmd = new(fullInsertStatement, connection, transaction);
             cmd.CommandType = CommandType.Text;
 
             for (var index = 0; index < paymentDto.Debitors.Count; index++)
@@ -95,7 +95,7 @@ values
                 cmd.Parameters.AddWithValue("@DebitorIdFk" + index, paymentDto.Debitors[index].Id);
             }
 
-            cmd.ExecuteNonQuery();
+            await cmd.ExecuteNonQueryAsync();
         }
     }
 }

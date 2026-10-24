@@ -21,17 +21,19 @@ namespace PaymentBackend.BL.Http
 
         public async Task<HttpResponseData> GetPaymentContextsAsync(HttpRequestData req)
         {
-            List<Common.Model.PaymentContext> result = _paymentContextDatabaseService.SelectAllPaymentContexts();
+            List<Common.Model.PaymentContext> result = await _paymentContextDatabaseService.SelectAllPaymentContextsAsync();
 
-            List<Common.Generated.PaymentContext> mappedResults = result
-                .Select(paymentContext => new Common.Generated.PaymentContext
-                {
-                    Id = (int)paymentContext.Id,
-                    Name = paymentContext.ContextName,
-                    IsClosed = paymentContext.IsClosed
-                })
-                .OrderByDescending(paymentContext => paymentContext.Id)
-                .ToList();
+            List<Common.Generated.PaymentContext> mappedResults =
+            [
+                .. result
+                    .Select(paymentContext => new Common.Generated.PaymentContext
+                    {
+                        Id = (int)paymentContext.Id,
+                        Name = paymentContext.ContextName,
+                        IsClosed = paymentContext.IsClosed
+                    })
+                    .OrderByDescending(paymentContext => paymentContext.Id)
+            ];
 
             Common.Generated.GetPaymentContextsResponse response = new()
             {

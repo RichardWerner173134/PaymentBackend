@@ -17,7 +17,7 @@ namespace PaymentBackend.Database.DatabaseServices
         {
         }
 
-        protected List<JoinedPayment2DebitorDto> SelectAllPayment2Debitors(SqlConnection connection, long paymentContext)
+        protected async Task<List<JoinedPayment2DebitorDto>> SelectAllPayment2DebitorsAsync(SqlConnection connection, long paymentContext)
         {
             string sql = @"
 select 
@@ -53,15 +53,15 @@ order by
     p.PaymentDate asc
 ";
 
-            using SqlCommand cmd1 = new(sql, connection);
+            await using SqlCommand cmd1 = new(sql, connection);
             cmd1.CommandType = CommandType.Text;
 
             cmd1.Parameters.AddWithValue("@PaymentContextIdFk", paymentContext);
 
-            List<JoinedPayment2DebitorDto> result = new();
+            List<JoinedPayment2DebitorDto> result = [];
 
-            using SqlDataReader reader = cmd1.ExecuteReader();
-            while (reader.Read())
+            await using SqlDataReader reader = await cmd1.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
             {
                 JoinedPayment2DebitorDto joinedPayment2Debitor = ConvertDbToObject(reader);
                 result.Add(joinedPayment2Debitor);
@@ -70,7 +70,7 @@ order by
             return result;
         }
 
-        protected List<JoinedPayment2DebitorDto> SelectPaymentById(SqlConnection connection, long paymentContext, long id)
+        protected async Task<List<JoinedPayment2DebitorDto>> SelectPaymentByIdAsync(SqlConnection connection, long paymentContext, long id)
         {
             string sql = @"
 with p2d as (
@@ -114,15 +114,15 @@ order by
     p.PaymentDate asc
 ";
 
-            using SqlCommand cmd = new(sql, connection);
+            await using SqlCommand cmd = new(sql, connection);
             cmd.CommandType = CommandType.Text;
             cmd.Parameters.AddWithValue("@PaymentId", id);
             cmd.Parameters.AddWithValue("@PaymentContextIdFk", paymentContext);
 
-            List<JoinedPayment2DebitorDto> result = new();
+            List<JoinedPayment2DebitorDto> result = [];
 
-            using SqlDataReader reader = cmd.ExecuteReader();
-            while (reader.Read())
+            await using SqlDataReader reader = await cmd.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
             {
                 JoinedPayment2DebitorDto joinedPayment2Debitor = ConvertDbToObject(reader);
                 result.Add(joinedPayment2Debitor);
@@ -131,7 +131,7 @@ order by
             return result;
         }
 
-        protected List<JoinedPayment2DebitorDto> SelectPaymentsByCreditor(SqlConnection connection, long paymentContext, string username)
+        protected async Task<List<JoinedPayment2DebitorDto>> SelectPaymentsByCreditorAsync(SqlConnection connection, long paymentContext, string username)
         {
             string sql = @"
 with c as (
@@ -175,15 +175,15 @@ order by
     p.PaymentDate asc
 ";
 
-            using SqlCommand cmd = new(sql, connection);
+            await using SqlCommand cmd = new(sql, connection);
             cmd.CommandType = CommandType.Text;
             cmd.Parameters.AddWithValue("@Username", username);
             cmd.Parameters.AddWithValue("@PaymentContextIdFk", paymentContext);
 
-            List<JoinedPayment2DebitorDto> result = new();
+            List<JoinedPayment2DebitorDto> result = [];
 
-            using SqlDataReader reader = cmd.ExecuteReader();
-            while (reader.Read())
+            await using SqlDataReader reader = await cmd.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
             {
                 JoinedPayment2DebitorDto joinedPayment2Debitor = ConvertDbToObject(reader);
                 result.Add(joinedPayment2Debitor);
@@ -192,7 +192,7 @@ order by
             return result;
         }
 
-        protected List<JoinedPayment2DebitorDto> SelectPaymentsByDebitor(SqlConnection connection, long paymentContext, string username)
+        protected async Task<List<JoinedPayment2DebitorDto>> SelectPaymentsByDebitorAsync(SqlConnection connection, long paymentContext, string username)
         {
             string sql = @"
 with d as (
@@ -246,15 +246,15 @@ order by
     p.PaymentDate asc
 ";
 
-            using SqlCommand cmd = new(sql, connection);
+            await using SqlCommand cmd = new(sql, connection);
             cmd.CommandType = CommandType.Text;
             cmd.Parameters.AddWithValue("@Username", username);
             cmd.Parameters.AddWithValue("@PaymentContextIdFk", paymentContext);
 
-            List<JoinedPayment2DebitorDto> result = new();
+            List<JoinedPayment2DebitorDto> result = [];
 
-            using SqlDataReader reader = cmd.ExecuteReader();
-            while (reader.Read())
+            await using SqlDataReader reader = await cmd.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
             {
                 JoinedPayment2DebitorDto joinedPayment2Debitor = ConvertDbToObject(reader);
                 result.Add(joinedPayment2Debitor);
@@ -263,7 +263,7 @@ order by
             return result;
         }
 
-        protected List<JoinedPayment2DebitorDto> SelectPaymentsByAuthor(SqlConnection connection, long paymentContext, string username)
+        protected async Task<List<JoinedPayment2DebitorDto>> SelectPaymentsByAuthorAsync(SqlConnection connection, long paymentContext, string username)
         {
             string sql = @"
 with a as (
@@ -307,15 +307,15 @@ order by
     p.PaymentDate asc
 ";
 
-            using SqlCommand cmd = new(sql, connection);
+            await using SqlCommand cmd = new(sql, connection);
             cmd.CommandType = CommandType.Text;
             cmd.Parameters.AddWithValue("@Username", username);
             cmd.Parameters.AddWithValue("@PaymentContextIdFk", paymentContext);
 
-            List<JoinedPayment2DebitorDto> result = new();
+            List<JoinedPayment2DebitorDto> result = [];
 
-            using SqlDataReader reader = cmd.ExecuteReader();
-            while (reader.Read())
+            await using SqlDataReader reader = await cmd.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
             {
                 JoinedPayment2DebitorDto joinedPayment2Debitor = ConvertDbToObject(reader);
                 result.Add(joinedPayment2Debitor);
@@ -324,7 +324,7 @@ order by
             return result;
         }
 
-        protected long MarkPaymentAsDeleted(SqlConnection connection, long paymentContext, long paymentId)
+        protected async Task<long> MarkPaymentAsDeletedAsync(SqlConnection connection, long paymentContext, long paymentId)
         {
             string sql = @"
 update
@@ -336,17 +336,17 @@ where
 	and PaymentContextIdFk = @PaymentContextIdFk
 ";
 
-            using SqlCommand cmd = new(sql, connection);
+            await using SqlCommand cmd = new(sql, connection);
             cmd.CommandType = CommandType.Text;
             cmd.Parameters.AddWithValue("@Id", paymentId);
             cmd.Parameters.AddWithValue("@PaymentContextIdFk", paymentContext);
 
-            return cmd.ExecuteNonQuery();
+            return await cmd.ExecuteNonQueryAsync();
         }
 
         protected List<FullPaymentDto> MergeJoinedPayments(List<JoinedPayment2DebitorDto> joinedPayments)
         {
-            List<FullPaymentDto> result = new();
+            List<FullPaymentDto> result = [];
 
             bool? firstIsClosedValue = null;
             foreach (var p2d in joinedPayments)
@@ -355,11 +355,11 @@ where
 
                 if (match == null)
                 {
-                    FullPaymentDto newPaymentDto = new FullPaymentDto()
+                    FullPaymentDto newPaymentDto = new FullPaymentDto
                     {
                         Id = p2d.PaymentId,
                         Creditor = p2d.CreditorUsername,
-                        Debitors = new List<string>() { p2d.DebitorUsername },
+                        Debitors = [p2d.DebitorUsername],
                         Author = p2d.AuthorUsername,
                         Price = p2d.Price,
                         PaymentDate = p2d.PaymentDate,
@@ -407,7 +407,7 @@ where
 
             var contextIsClosed= reader.SafeGetInt16("CtxIsClosed");
 
-            return new JoinedPayment2DebitorDto()
+            return new JoinedPayment2DebitorDto
             {
                 PaymentId = paymentId!.Value,
 

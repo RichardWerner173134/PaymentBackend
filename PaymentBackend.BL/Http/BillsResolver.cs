@@ -33,7 +33,7 @@ namespace PaymentBackend.BL.Http
         {
             DateTime calculationTime = DateTime.Now;
 
-            List<Common.Model.Dto.FullPaymentDto> allPayments = _paymentDatabaseService.SelectAllPayments(paymentContext);
+            List<Common.Model.Dto.FullPaymentDto> allPayments = await _paymentDatabaseService.SelectAllPaymentsAsync(paymentContext);
             List<Common.Model.Bill> bills = _billCalculationService.GetBills(allPayments);
             List<Common.Generated.Bill> mappedBills = _httpMapper.MapBills(bills);
 
@@ -52,10 +52,10 @@ namespace PaymentBackend.BL.Http
             
             DateTime calculationTime = DateTime.UtcNow;
 
-            List<Common.Model.Dto.FullPaymentDto> paymentsForCreditor = _paymentDatabaseService.SelectPaymentsByCreditor(paymentContext, username);
-            List<Common.Model.Dto.FullPaymentDto> paymentsForDebitor = _paymentDatabaseService.SelectPaymentsByDebitor(paymentContext, username);
+            List<Common.Model.Dto.FullPaymentDto> paymentsForCreditor = await _paymentDatabaseService.SelectPaymentsByCreditorAsync(paymentContext, username);
+            List<Common.Model.Dto.FullPaymentDto> paymentsForDebitor = await _paymentDatabaseService.SelectPaymentsByDebitorAsync(paymentContext, username);
 
-            List<Common.Model.Dto.FullPaymentDto> allPayments = paymentsForCreditor.Concat(paymentsForDebitor).ToList();
+            List<Common.Model.Dto.FullPaymentDto> allPayments = [.. paymentsForCreditor, .. paymentsForDebitor];
 
             List<Common.Model.Bill> bills = _billCalculationService.GetBills(allPayments);
             bills = FilterByUsername(bills, username);
@@ -75,7 +75,7 @@ namespace PaymentBackend.BL.Http
         {
             DateTime calculationTime = DateTime.UtcNow;
 
-            List<Common.Model.Dto.FullPaymentDto> allPayments = _paymentDatabaseService.SelectAllPayments(paymentContext);
+            List<Common.Model.Dto.FullPaymentDto> allPayments = await _paymentDatabaseService.SelectAllPaymentsAsync(paymentContext);
             List<Common.Model.Bill> bills = _billCalculationService.GetBills(allPayments);
             List<Common.Generated.ShortBill> mappedBills = _httpMapper.MapShortBills(bills);
 
@@ -94,10 +94,10 @@ namespace PaymentBackend.BL.Http
             
             DateTime calculationTime = DateTime.UtcNow;
 
-            List<Common.Model.Dto.FullPaymentDto> paymentsForCreditor = _paymentDatabaseService.SelectPaymentsByCreditor(paymentContext, username);
-            List<Common.Model.Dto.FullPaymentDto> paymentsForDebitor = _paymentDatabaseService.SelectPaymentsByDebitor(paymentContext, username);
+            List<Common.Model.Dto.FullPaymentDto> paymentsForCreditor = await _paymentDatabaseService.SelectPaymentsByCreditorAsync(paymentContext, username);
+            List<Common.Model.Dto.FullPaymentDto> paymentsForDebitor = await _paymentDatabaseService.SelectPaymentsByDebitorAsync(paymentContext, username);
 
-            List<Common.Model.Dto.FullPaymentDto> allPayments = paymentsForCreditor.Concat(paymentsForDebitor).ToList();
+            List<Common.Model.Dto.FullPaymentDto> allPayments = [.. paymentsForCreditor, .. paymentsForDebitor];
 
             List<Common.Model.Bill> bills = _billCalculationService.GetBills(allPayments);
             bills = FilterByUsername(bills, username);
@@ -115,9 +115,12 @@ namespace PaymentBackend.BL.Http
             return await BuildOkResponseAsync(req, response);
         }
 
-        private static List<Common.Model.Bill> FilterByUsername(List<Common.Model.Bill> bills, string username) => 
-            bills
-                .Where(bill => bill.IssuedBy.ToLower().Equals(username.ToLower()) || bill.IssuedFor.ToLower().Equals(username.ToLower()))
-                .ToList();
+        private static List<Common.Model.Bill> FilterByUsername(List<Common.Model.Bill> bills, string username) =>
+        [
+            .. bills
+                .Where(bill =>
+                    bill.IssuedBy.ToLower().Equals(username.ToLower()) ||
+                    bill.IssuedFor.ToLower().Equals(username.ToLower()))
+        ];
     }
 }

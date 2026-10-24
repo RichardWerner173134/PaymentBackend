@@ -23,33 +23,35 @@ namespace PaymentBackend.BL.Test.Core
         public void GetBills_ShouldReturnListOfData()
         {
             // Arrange
-            List<FullPaymentDto> data = new()
-            {
+            List<FullPaymentDto> data =
+            [
+
                 new()
                 {
                     Id = 1,
                     Author = "Gelehrter",
                     Creditor = "Gelehrter",
-                    Debitors = new List<string>(){ "Gelehrter", "Richard" },
+                    Debitors = ["Gelehrter", "Richard"],
                     PaymentDate = new(),
                     Price = 100,
                     UpdateTime = new(),
                     PaymentDescription = "Payment with Creditor paying for himself",
                     PaymentContextIsClosed = false
                 },
+
                 new()
                 {
                     Id = 1,
                     Author = "Gelehrter",
                     Creditor = "Gelehrter",
-                    Debitors = new List<string>() { "Richard" },
+                    Debitors = ["Richard"],
                     PaymentDate = new(),
                     Price = 20,
                     UpdateTime = new(),
                     PaymentDescription = "Payment without Creditor paying for himself",
                     PaymentContextIsClosed = false
                 }
-            };
+            ];
 
             // Act
             var result = _classUnderTest.GetBills(data);
@@ -62,21 +64,22 @@ namespace PaymentBackend.BL.Test.Core
         public void GetBills_ShouldCreateABillForEachDebitorInPayment()
         {
             // Arrange
-            List<FullPaymentDto> data = new()
-            {
+            List<FullPaymentDto> data =
+            [
+
                 new()
                 {
                     Id = 1,
                     Author = "Gelehrter",
                     Creditor = "Gelehrter",
-                    Debitors = new List<string>() { "FirstDebitor", "SecondDebitor", "ThirdDebitor" },
+                    Debitors = ["FirstDebitor", "SecondDebitor", "ThirdDebitor"],
                     PaymentDate = new(),
                     Price = 120,
                     UpdateTime = new(),
                     PaymentDescription = "XXX",
                     PaymentContextIsClosed = false
                 }
-            };
+            ];
 
             // Act
             var result = _classUnderTest.GetBills(data);
@@ -112,33 +115,35 @@ namespace PaymentBackend.BL.Test.Core
         public void GetBills_ShouldCreateABillForEachDebitorInEachPayment()
         {
             // Arrange
-            List<FullPaymentDto> data = new()
-            {
+            List<FullPaymentDto> data =
+            [
+
                 new()
                 {
                     Id = 1,
                     Author = "Gelehrter",
                     Creditor = "Gelehrter",
-                    Debitors = new List<string>() { "FirstDebitor", "SecondDebitor", "ThirdDebitor" },
+                    Debitors = ["FirstDebitor", "SecondDebitor", "ThirdDebitor"],
                     PaymentDate = new(),
                     Price = 120,
                     UpdateTime = new(),
                     PaymentDescription = "XXX",
                     PaymentContextIsClosed = false
                 },
+
                 new()
                 {
                     Id = 2,
                     Author = "Richard",
                     Creditor = "Richard",
-                    Debitors = new List<string>() { "FourthDebitor", "FifthDebitor" },
+                    Debitors = ["FourthDebitor", "FifthDebitor"],
                     PaymentDate = new(),
                     Price = 120,
                     UpdateTime = new(),
                     PaymentDescription = "XXX",
                     PaymentContextIsClosed = false
                 }
-            };
+            ];
 
             // Act
             var result = _classUnderTest.GetBills(data);
@@ -188,33 +193,35 @@ namespace PaymentBackend.BL.Test.Core
         public void GetBills_ShouldChangeIssuedBy_WhenAmountGoesUnderZero()
         {
             // Arrange
-            List<FullPaymentDto> data = new()
-            {
+            List<FullPaymentDto> data =
+            [
+
                 new()
                 {
                     Id = 1,
                     Author = "Gelehrter",
                     Creditor = "Gelehrter",
-                    Debitors = new List<string>() { "FirstDebitor" },
+                    Debitors = ["FirstDebitor"],
                     PaymentDate = new(),
                     Price = 100,
                     UpdateTime = new(),
                     PaymentDescription = "XXX",
                     PaymentContextIsClosed = false
                 },
+
                 new()
                 {
                     Id = 2,
                     Author = "FirstDebitor",
                     Creditor = "FirstDebitor",
-                    Debitors = new List<string>() { "Gelehrter" },
+                    Debitors = ["Gelehrter"],
                     PaymentDate = new(),
                     Price = 120,
                     UpdateTime = new(),
                     PaymentDescription = "XXX",
                     PaymentContextIsClosed = false
                 }
-            };
+            ];
 
             // Act
             var result = _classUnderTest.GetBills(data);
@@ -238,33 +245,35 @@ namespace PaymentBackend.BL.Test.Core
         public void GetBills_ShouldCreateABillForEachPair()
         {
             // Arrange
-            List<FullPaymentDto> data = new()
-            {
+            List<FullPaymentDto> data =
+            [
+
                 new()
                 {
                     Id = 1,
                     Author = "Gelehrter",
                     Creditor = "Gelehrter",
-                    Debitors = new List<string>() { "Richard", "Florian" }, // 50 each
+                    Debitors = ["Richard", "Florian"], // 50 each
                     PaymentDate = new(),
                     Price = 100,
                     UpdateTime = new(),
                     PaymentDescription = "XXX",
                     PaymentContextIsClosed = false
                 },
+
                 new()
                 {
                     Id = 2,
                     Author = "Richard",
                     Creditor = "Richard",
-                    Debitors = new List<string>() { "Gelehrter", "Bombe", "Florian" }, // 40 each
+                    Debitors = ["Gelehrter", "Bombe", "Florian"], // 40 each
                     PaymentDate = new(),
                     Price = 120,
                     UpdateTime = new(),
                     PaymentDescription = "XXX",
                     PaymentContextIsClosed = false
                 }
-            };
+            ];
 
             // Act
             var result = _classUnderTest.GetBills(data);
@@ -311,33 +320,35 @@ namespace PaymentBackend.BL.Test.Core
         public void GetBills_ShouldCreateABillForEachPair_WithWeirdCase()
         {
             // Arrange
-            List<FullPaymentDto> data = new()
-            {
+            List<FullPaymentDto> data =
+            [
+
                 new()
                 {
                     Id = 1,
                     Author = "geLehrTer",
                     Creditor = "GelehRTEr",
-                    Debitors = new List<string>() { "riCHard", "flORIan" }, // 50 each
+                    Debitors = ["riCHard", "flORIan"], // 50 each
                     PaymentDate = new(),
                     Price = 100,
                     UpdateTime = new(),
                     PaymentDescription = "XXX",
                     PaymentContextIsClosed = false
                 },
+
                 new()
                 {
                     Id = 2,
                     Author = "Richard",
                     Creditor = "RichArd",
-                    Debitors = new List<string>() { "GelehrTeR", "Bombe", "Florian" }, // 40 each
+                    Debitors = ["GelehrTeR", "Bombe", "Florian"], // 40 each
                     PaymentDate = new(),
                     Price = 120,
                     UpdateTime = new(),
                     PaymentDescription = "XXX",
                     PaymentContextIsClosed = false
                 }
-            };
+            ];
 
             // Act
             var result = _classUnderTest.GetBills(data);

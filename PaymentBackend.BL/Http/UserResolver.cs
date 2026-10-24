@@ -19,15 +19,18 @@ namespace PaymentBackend.BL.Http
 
         public async Task<HttpResponseData> GetPaymentUsersAsync(HttpRequestData req)
         {
-            var allUsers = _userDbService.SelectAllUsers();
+            var allUsers = await _userDbService.SelectAllUsersAsync();
 
-            List<Common.Generated.User> httpMappedUsers = allUsers.Select(user => new Common.Generated.User()
-            {
-                Id = user.Id,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                Username= user.Username
-            }).ToList();
+            List<Common.Generated.User> httpMappedUsers =
+            [
+                .. allUsers.Select(user => new Common.Generated.User
+                {
+                    Id = user.Id,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Username = user.Username
+                })
+            ];
 
             Common.Generated.GetUsersResponse response = new()
             {

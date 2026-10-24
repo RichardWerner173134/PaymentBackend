@@ -19,7 +19,7 @@ namespace PaymentBackend.Common.Model
             IssuedBy = issuedBy;
             IssuedFor = issuedFor;
             Amount = Zero;
-            _billComposites = new List<BillComposite>();
+            _billComposites = [];
         }
 
         public void AddBillComposite(FullPaymentDto payment, string creditor, string debitor)

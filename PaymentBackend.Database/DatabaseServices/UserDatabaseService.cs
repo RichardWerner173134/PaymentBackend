@@ -8,8 +8,8 @@ namespace PaymentBackend.Database.DatabaseServices
 {
     public interface IUserDatabaseService
     {
-        List<User> SelectAllUsers();
-        User? SelectUserByUsername(string username);
+        Task<List<User>> SelectAllUsersAsync();
+        Task<User?> SelectUserByUsernameAsync(string username);
     }
 
     public class UserDatabaseService : AbstractDatabaseService, IUserDatabaseService
@@ -21,31 +21,31 @@ namespace PaymentBackend.Database.DatabaseServices
         {
         }
 
-        public List<User> SelectAllUsers()
+        public async Task<List<User>> SelectAllUsersAsync()
         {
             var connectionString = GetConnectionString();
-            using var connection = new SqlConnection(connectionString);
-            connection.Open();
+            await using var connection = new SqlConnection(connectionString);
+            await connection.OpenAsync();
 
-            var result = SelectAllUsers(connection);
+            var result = await SelectAllUsersAsync(connection);
             
-            connection.Close();
+            await connection.CloseAsync();
             return result;
         }
 
-        public User? SelectUserByUsername(string username)
+        public async Task<User?> SelectUserByUsernameAsync(string username)
         {
             var connectionString = GetConnectionString();
-            using var connection = new SqlConnection(connectionString);
-            connection.Open();
+            await using var connection = new SqlConnection(connectionString);
+            await connection.OpenAsync();
 
-            var result = SelectUserByUsername(connection, username);
+            var result = await SelectUserByUsernameAsync(connection, username);
 
-            connection.Close();
+            await connection.CloseAsync();
             return result;
         }
 
-        private User? SelectUserByUsername(SqlConnection connection, string username)
+        private async Task<User?> SelectUserByUsernameAsync(SqlConnection connection, string username)
         {
             string sql = @"
 select 
@@ -59,13 +59,13 @@ where
     u.Username = @Username
 ";
 
-            using SqlCommand cmd = new(sql, connection);
+            await using SqlCommand cmd = new(sql, connection);
             cmd.CommandType = CommandType.Text;
 
             cmd.Parameters.AddWithValue("@Username", username);
 
-            using SqlDataReader reader = cmd.ExecuteReader();
-            while (reader.Read())
+            await using SqlDataReader reader = await cmd.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
             {
                 return ConvertDbToObject(reader);
             }
@@ -73,7 +73,7 @@ where
             return null;
         }
 
-        private List<User> SelectAllUsers(SqlConnection connection)
+        private async Task<List<User>> SelectAllUsersAsync(SqlConnection connection)
         {
             string sql = @"
 select 
@@ -87,13 +87,13 @@ order by
     u.Username asc
 ";
 
-            using SqlCommand cmd1 = new(sql, connection);
+            await using SqlCommand cmd1 = new(sql, connection);
             cmd1.CommandType = CommandType.Text;
 
-            List<User> result = new();
+            List<User> result = [];
 
-            using SqlDataReader reader = cmd1.ExecuteReader();
-            while (reader.Read())
+            await using SqlDataReader reader = await cmd1.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
             {
                 var user = ConvertDbToObject(reader);
                 result.Add(user);
@@ -109,7 +109,7 @@ order by
             string lastName = reader.SafeGetString("LastName");
             string username = reader.SafeGetString("Username");
 
-            return new User()
+            return new User
             {
                 Id = id!.Value,
                 FirstName = firstName,

@@ -23,33 +23,35 @@ namespace PaymentBackend.BL.Test.Core
         {
             // Arrange
             string creditor = "Richard";
-            List<FullPaymentDto> payments = new()
-            {
+            List<FullPaymentDto> payments =
+            [
+
                 new FullPaymentDto
                 {
                     Id = 1,
                     Price = 20,
                     Creditor = creditor,
-                    Debitors = new List<string>(){ "Günther" }, // no creditor in here
+                    Debitors = ["Günther"], // no creditor in here
                     Author = creditor,
                     PaymentDate = new(),
                     PaymentDescription = "blubablub",
                     UpdateTime = new(),
                     PaymentContextIsClosed = false
                 },
+
                 new FullPaymentDto
                 {
                     Id = 1,
                     Price = 40,
                     Creditor = creditor,
-                    Debitors = new List<string>(){ "Günther", "Dieter" }, // no creditor in here
+                    Debitors = ["Günther", "Dieter"], // no creditor in here
                     Author = "",
                     PaymentDate = new(),
                     PaymentDescription = "",
                     UpdateTime = new(),
                     PaymentContextIsClosed = false
                 }
-            };
+            ];
 
             // Act
             var result = _classUnderTest.GetPaymentOverviewForCreditor(payments, creditor);
@@ -67,33 +69,35 @@ namespace PaymentBackend.BL.Test.Core
         {
             // Arrange
             string creditor = "Richard";
-            List<FullPaymentDto> payments = new()
-            {
+            List<FullPaymentDto> payments =
+            [
+
                 new FullPaymentDto
                 {
                     Id = 1,
                     Price = 20,
                     Creditor = creditor,
-                    Debitors = new List<string>(){ creditor, "Günther" }, // 1/2 of this price will be removed
+                    Debitors = [creditor, "Günther"], // 1/2 of this price will be removed
                     Author = creditor,
                     PaymentDate = new(),
                     PaymentDescription = "blubablub",
                     UpdateTime = new(),
                     PaymentContextIsClosed = false
                 },
+
                 new FullPaymentDto
                 {
                     Id = 1,
                     Price = 40,
                     Creditor = creditor,
-                    Debitors = new List<string>(){ creditor, "Günther", "Dieter" }, // 1/3 of this price will be removed
+                    Debitors = [creditor, "Günther", "Dieter"], // 1/3 of this price will be removed
                     Author = "",
                     PaymentDate = new(),
                     PaymentDescription = "",
                     UpdateTime = new(),
                     PaymentContextIsClosed = false
                 }
-            };
+            ];
 
             // Act
             var result = _classUnderTest.GetPaymentOverviewForCreditor(payments, creditor);
@@ -115,33 +119,35 @@ namespace PaymentBackend.BL.Test.Core
         {
             // Arrange
             string debitor = "Günther";
-            List<FullPaymentDto> payments = new()
-            {
+            List<FullPaymentDto> payments =
+            [
+
                 new FullPaymentDto
                 {
                     Id = 1,
                     Price = 20,
                     Creditor = "Richard",
-                    Debitors = new List<string>(){ debitor, "Richard" }, // 1/2 of this price is the portion Günther wants to know
+                    Debitors = [debitor, "Richard"], // 1/2 of this price is the portion Günther wants to know
                     Author = "Richard",
                     PaymentDate = new(),
                     PaymentDescription = "blubablub",
                     UpdateTime = new(),
                     PaymentContextIsClosed = false
                 },
+
                 new FullPaymentDto
                 {
                     Id = 1,
                     Price = 40,
                     Creditor = "Richard",
-                    Debitors = new List<string>(){ debitor, "Dieter", "Uschi" }, // 1/3 of this price is the portion Günther wants to know
+                    Debitors = [debitor, "Dieter", "Uschi"], // 1/3 of this price is the portion Günther wants to know
                     Author = "Richard",
                     PaymentDate = new(),
                     PaymentDescription = "",
                     UpdateTime = new(),
                     PaymentContextIsClosed = false
                 }
-            };
+            ];
 
             // Act
             var result = _classUnderTest.GetPaymentOverviewForDebitor(payments, debitor);
@@ -162,33 +168,35 @@ namespace PaymentBackend.BL.Test.Core
         {
             // Arrange
             string creditor = "Richard";
-            List<FullPaymentDto> payments = new()
-            {
+            List<FullPaymentDto> payments =
+            [
+
                 new FullPaymentDto
                 {
                     Id = 1,
                     Price = 20,
                     Creditor = creditor,
-                    Debitors = new List<string>(){ "rICHarD", "Günther" }, // 1/2 of this price will be removed
+                    Debitors = ["rICHarD", "Günther"], // 1/2 of this price will be removed
                     Author = creditor,
                     PaymentDate = new(),
                     PaymentDescription = "blubablub",
                     UpdateTime = new(),
                     PaymentContextIsClosed = false
                 },
+
                 new FullPaymentDto
                 {
                     Id = 1,
                     Price = 40,
                     Creditor = creditor,
-                    Debitors = new List<string>(){ "RICHARd", "Günther", "Dieter" }, // 1/3 of this price will be removed
+                    Debitors = ["RICHARd", "Günther", "Dieter"], // 1/3 of this price will be removed
                     Author = "",
                     PaymentDate = new(),
                     PaymentDescription = "",
                     UpdateTime = new(),
                     PaymentContextIsClosed = false
                 }
-            };
+            ];
 
             // Act
             var result = _classUnderTest.GetPaymentOverviewForCreditor(payments, creditor);
@@ -206,33 +214,35 @@ namespace PaymentBackend.BL.Test.Core
         {
             // Arrange
             string debitor = "gÜntHER";
-            List<FullPaymentDto> payments = new()
-            {
+            List<FullPaymentDto> payments =
+            [
+
                 new FullPaymentDto
                 {
                     Id = 1,
                     Price = 20,
                     Creditor = "Richard",
-                    Debitors = new List<string>(){ "günther", "Richard" }, // 1/2 of this price is the portion Günther wants to know
+                    Debitors = ["günther", "Richard"], // 1/2 of this price is the portion Günther wants to know
                     Author = "Richard",
                     PaymentDate = new(),
                     PaymentDescription = "blubablub",
                     UpdateTime = new(),
                     PaymentContextIsClosed = false
                 },
+
                 new FullPaymentDto
                 {
                     Id = 1,
                     Price = 40,
                     Creditor = "Richard",
-                    Debitors = new List<string>(){ "GünTHer", "Dieter", "Uschi" }, // 1/3 of this price is the portion Günther wants to know
+                    Debitors = ["GünTHer", "Dieter", "Uschi"], // 1/3 of this price is the portion Günther wants to know
                     Author = "Richard",
                     PaymentDate = new(),
                     PaymentDescription = "",
                     UpdateTime = new(),
                     PaymentContextIsClosed = false
                 }
-            };
+            ];
 
             // Act
             var result = _classUnderTest.GetPaymentOverviewForDebitor(payments, debitor);

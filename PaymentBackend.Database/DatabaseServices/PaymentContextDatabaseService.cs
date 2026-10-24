@@ -8,8 +8,8 @@ namespace PaymentBackend.Database.DatabaseServices
 {
     public interface IPaymentContextDatabaseService
     {
-        List<PaymentContext> SelectAllPaymentContexts();
-        PaymentContext? SelectPaymentContextById(long paymentContext);
+        Task<List<PaymentContext>> SelectAllPaymentContextsAsync();
+        Task<PaymentContext?> SelectPaymentContextByIdAsync(long paymentContext);
     }
 
     public class PaymentContextDatabaseService : AbstractDatabaseService, IPaymentContextDatabaseService
@@ -22,31 +22,31 @@ namespace PaymentBackend.Database.DatabaseServices
         {
         }
 
-        public List<PaymentContext> SelectAllPaymentContexts()
+        public async Task<List<PaymentContext>> SelectAllPaymentContextsAsync()
         {
             var connectionString = GetConnectionString();
-            using var connection = new SqlConnection(connectionString);
-            connection.Open();
+            await using var connection = new SqlConnection(connectionString);
+            await connection.OpenAsync();
 
-            var result = SelectAllPaymentContexts(connection);
+            var result = await SelectAllPaymentContextsAsync(connection);
             
-            connection.Close();
+            await connection.CloseAsync();
             return result;
         }
 
-        public PaymentContext? SelectPaymentContextById(long paymentContext)
+        public async Task<PaymentContext?> SelectPaymentContextByIdAsync(long paymentContext)
         {
             var connectionString = GetConnectionString();
-            using var connection = new SqlConnection(connectionString);
-            connection.Open();
+            await using var connection = new SqlConnection(connectionString);
+            await connection.OpenAsync();
 
-            var result = SelectPaymentContextById(connection, paymentContext);
+            var result = await SelectPaymentContextByIdAsync(connection, paymentContext);
 
-            connection.Close();
+            await connection.CloseAsync();
             return result;
         }
 
-        private List<PaymentContext> SelectAllPaymentContexts(SqlConnection connection)
+        private async Task<List<PaymentContext>> SelectAllPaymentContextsAsync(SqlConnection connection)
         {
             string sql = @"
 select 
@@ -57,13 +57,13 @@ from
     PaymentContext c
 ";
 
-            using SqlCommand cmd1 = new(sql, connection);
+            await using SqlCommand cmd1 = new(sql, connection);
             cmd1.CommandType = CommandType.Text;
 
-            List<PaymentContext> result = new();
+            List<PaymentContext> result = [];
 
-            using SqlDataReader reader = cmd1.ExecuteReader();
-            while (reader.Read())
+            await using SqlDataReader reader = await cmd1.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
             {
                 var paymentContext = ConvertDbToObject(reader);
                 result.Add(paymentContext);
@@ -72,7 +72,7 @@ from
             return result;
         }
 
-        private PaymentContext? SelectPaymentContextById(SqlConnection connection, long paymentContext)
+        private async Task<PaymentContext?> SelectPaymentContextByIdAsync(SqlConnection connection, long paymentContext)
         {
             string sql = @"
 select 
@@ -85,13 +85,13 @@ where
     c.Id = @PaymentContextId
 ";
 
-            using SqlCommand cmd1 = new(sql, connection);
+            await using SqlCommand cmd1 = new(sql, connection);
             cmd1.CommandType = CommandType.Text;
 
             cmd1.Parameters.AddWithValue("@PaymentContextId", paymentContext);
 
-            using SqlDataReader reader = cmd1.ExecuteReader();
-            while (reader.Read())
+            await using SqlDataReader reader = await cmd1.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
             {
                 PaymentContext result = ConvertDbToObject(reader);
                 return result;
@@ -106,7 +106,7 @@ where
             string contextName = reader.SafeGetString("ContextName");
             bool isClosed = reader.SafeGetInt16("IsClosed") is 1;
             
-            return new PaymentContext()
+            return new PaymentContext
             {
                 Id = id!.Value,
                 ContextName = contextName,

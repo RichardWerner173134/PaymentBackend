@@ -6,7 +6,7 @@
 
         public required long PaymentContext { get; set; }
         public required User Creditor { get; set; }
-        public required List<User> Debitors { get; set; } = new();
+        public required List<User> Debitors { get; set; } = [];
         public required User Author { get; set; }
         public required decimal Price { get; set; }
         public required DateTime PaymentDate { get; set; }

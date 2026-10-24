@@ -15,42 +15,35 @@ namespace PaymentBackend.Database.DatabaseServices
     public class PaymentContextDatabaseService : AbstractDatabaseService, IPaymentContextDatabaseService
     {
         public PaymentContextDatabaseService(
-            ISqlExceptionHandler exceptionHandler,
             IFunctionSettingsResolver functionSettingsResolver, 
             ILogger<UserDatabaseService> logger
         ) 
-            : base(exceptionHandler, functionSettingsResolver, logger)
+            : base(functionSettingsResolver, logger)
         {
         }
 
         public List<PaymentContext> SelectAllPaymentContexts()
         {
-            return _exceptionHandler.ExecuteOrThrow(() =>
-            {
-                var connectionString = GetConnectionString();
-                using var connection = new SqlConnection(connectionString);
-                connection.Open();
+            var connectionString = GetConnectionString();
+            using var connection = new SqlConnection(connectionString);
+            connection.Open();
 
-                var result = SelectAllPaymentContexts(connection);
-                
-                connection.Close();
-                return result;
-            });
+            var result = SelectAllPaymentContexts(connection);
+            
+            connection.Close();
+            return result;
         }
 
         public PaymentContext? SelectPaymentContextById(long paymentContext)
         {
-            return _exceptionHandler.ExecuteOrThrow(() =>
-            {
-                var connectionString = GetConnectionString();
-                using var connection = new SqlConnection(connectionString);
-                connection.Open();
+            var connectionString = GetConnectionString();
+            using var connection = new SqlConnection(connectionString);
+            connection.Open();
 
-                var result = SelectPaymentContextById(connection, paymentContext);
+            var result = SelectPaymentContextById(connection, paymentContext);
 
-                connection.Close();
-                return result;
-            });
+            connection.Close();
+            return result;
         }
 
         private List<PaymentContext> SelectAllPaymentContexts(SqlConnection connection)

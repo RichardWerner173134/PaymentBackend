@@ -10,11 +10,10 @@ namespace PaymentBackend.Database.DatabaseServices
     public abstract class AbstractPaymentDatabaseService : AbstractDatabaseService
     {
         protected AbstractPaymentDatabaseService(
-            ISqlExceptionHandler exceptionHandler,
             IFunctionSettingsResolver functionSettingsResolver,
             ILogger logger
         ) 
-            : base(exceptionHandler, functionSettingsResolver, logger)
+            : base(functionSettingsResolver, logger)
         {
         }
 

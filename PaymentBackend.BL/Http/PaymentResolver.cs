@@ -1,7 +1,6 @@
 ﻿using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 using PaymentBackend.Common.Exceptions;
-using PaymentBackend.Database;
 using PaymentBackend.Database.DatabaseServices;
 using PaymentBackend.Settings;
 using Newtonsoft.Json;
@@ -27,7 +26,6 @@ namespace PaymentBackend.BL.Http
         public PaymentResolver(IPaymentDatabaseService paymentDbService,
             IUserDatabaseService userDatabaseService,
             IPostPaymentDatabaseService postPaymentDbService,
-            ISqlExceptionHandler sqlExceptionHandler,
             IFunctionSettingsResolver functionSettingsResolver,
             ILogger<PaymentResolver> logger,
             IPaymentContextDatabaseService paymentContextDatabaseService

@@ -9,11 +9,9 @@ namespace PaymentBackend.Database
     {
         protected readonly IFunctionSettingsResolver _functionSettingsResolver;
         protected readonly ILogger _logger;
-        protected readonly ISqlExceptionHandler _exceptionHandler;
 
-        protected AbstractDatabaseService(ISqlExceptionHandler exceptionHandler, IFunctionSettingsResolver functionSettingsResolver, ILogger logger)
+        protected AbstractDatabaseService(IFunctionSettingsResolver functionSettingsResolver, ILogger logger)
         {
-            _exceptionHandler = exceptionHandler;
             _functionSettingsResolver = functionSettingsResolver;
             _logger = logger;
         }

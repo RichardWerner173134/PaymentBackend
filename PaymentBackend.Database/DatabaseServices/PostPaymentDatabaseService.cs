@@ -15,11 +15,10 @@ namespace PaymentBackend.Database.DatabaseServices
 
     {
         public PostPaymentDatabaseService(
-            ISqlExceptionHandler exceptionHandler,
             IFunctionSettingsResolver functionSettingsResolver,
             ILogger<PostPaymentDatabaseService> logger
         ) 
-            : base(exceptionHandler, functionSettingsResolver, logger)
+            : base(functionSettingsResolver, logger)
         {
         }
 

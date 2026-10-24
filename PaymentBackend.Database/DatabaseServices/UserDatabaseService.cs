@@ -14,42 +14,35 @@ namespace PaymentBackend.Database.DatabaseServices
 
     public class UserDatabaseService : AbstractDatabaseService, IUserDatabaseService
     {
-        public UserDatabaseService(ISqlExceptionHandler exceptionHandler,
-            IFunctionSettingsResolver functionSettingsResolver, 
+        public UserDatabaseService(IFunctionSettingsResolver functionSettingsResolver, 
             ILogger<UserDatabaseService> logger
         ) 
-            : base(exceptionHandler, functionSettingsResolver, logger)
+            : base(functionSettingsResolver, logger)
         {
         }
 
         public List<User> SelectAllUsers()
         {
-            return _exceptionHandler.ExecuteOrThrow(() =>
-            {
-                var connectionString = GetConnectionString();
-                using var connection = new SqlConnection(connectionString);
-                connection.Open();
+            var connectionString = GetConnectionString();
+            using var connection = new SqlConnection(connectionString);
+            connection.Open();
 
-                var result = SelectAllUsers(connection);
-                
-                connection.Close();
-                return result;
-            });
+            var result = SelectAllUsers(connection);
+            
+            connection.Close();
+            return result;
         }
 
         public User? SelectUserByUsername(string username)
         {
-            return _exceptionHandler.ExecuteOrThrow(() =>
-            {
-                var connectionString = GetConnectionString();
-                using var connection = new SqlConnection(connectionString);
-                connection.Open();
+            var connectionString = GetConnectionString();
+            using var connection = new SqlConnection(connectionString);
+            connection.Open();
 
-                var result = SelectUserByUsername(connection, username);
+            var result = SelectUserByUsername(connection, username);
 
-                connection.Close();
-                return result;
-            });
+            connection.Close();
+            return result;
         }
 
         private User? SelectUserByUsername(SqlConnection connection, string username)

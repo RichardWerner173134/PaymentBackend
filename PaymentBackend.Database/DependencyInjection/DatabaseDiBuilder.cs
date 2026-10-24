@@ -11,8 +11,6 @@ namespace PaymentBackend.Database.DependencyInjection
             serviceCollection.AddSingleton<IPaymentDatabaseService, PaymentDatabaseService>();
             serviceCollection.AddSingleton<IPostPaymentDatabaseService, PostPaymentDatabaseService>();
             serviceCollection.AddSingleton<IPaymentContextDatabaseService, PaymentContextDatabaseService>();
-
-            serviceCollection.AddSingleton<ISqlExceptionHandler, SqlExceptionHandler>();
         }
     }
 }

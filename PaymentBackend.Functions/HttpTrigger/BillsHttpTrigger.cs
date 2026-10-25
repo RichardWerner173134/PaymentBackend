@@ -55,5 +55,15 @@ namespace PaymentBackend.Functions.HttpTrigger
         {
             return await _resolver.GetBillOverviewsForUserAsync(req, paymentContext, username, cancellationToken);
         }
+
+        [Function("GetMinimizedBills")]
+        public async Task<HttpResponseData> GetMinimizedBillsAsync(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "paymentContexts/{paymentContext}/minimized-bills")] HttpRequestData req,
+            long paymentContext,
+            CancellationToken cancellationToken
+        )
+        {
+            return await _resolver.GetMinimizedBillsAsync(req, paymentContext, cancellationToken);
+        }
     }
 }

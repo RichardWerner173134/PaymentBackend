@@ -331,6 +331,25 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GetBillOverviewsForUserResponse'
+  /paymentContexts/{paymentContext}/minimized-bills:
+    get:
+      summary: get the smallest possible number of transfers that settles all bills
+      description: every user ends up with the same balance as with the regular bills. Amounts are rounded to cents.
+      tags: [bill overview]
+      parameters:
+        - in: path
+          name: paymentContext
+          schema:
+            type: integer
+            format: int64
+          required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetMinimizedBillsResponse'
 components:
   schemas:
     GetUsersResponse:
@@ -621,6 +640,20 @@ components:
         - bills
         - calculationTime
         - balance
+    GetMinimizedBillsResponse:
+      type: object
+      properties:
+        calculationTime:
+          type: string
+          format: date-time
+          example: "2024-06-28T22:13:13.965Z"
+        bills:
+          type: array
+          items:
+            $ref: '#/components/schemas/ShortBill'
+      required:
+        - bills
+        - calculationTime
     Bill:
       type: object
       properties:

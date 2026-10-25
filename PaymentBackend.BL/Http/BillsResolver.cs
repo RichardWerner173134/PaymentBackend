@@ -12,20 +12,24 @@ namespace PaymentBackend.BL.Http
         Task<HttpResponseData> GetBillsForUserAsync(HttpRequestData req, long paymentContext, string username, CancellationToken cancellationToken);
         Task<HttpResponseData> GetBillOverviewsForUserAsync(HttpRequestData req, long paymentContext, string username, CancellationToken cancellationToken);
         Task<HttpResponseData> GetAllBillOverviewsAsync(HttpRequestData req, long paymentContext, CancellationToken cancellationToken);
+        Task<HttpResponseData> GetMinimizedBillsAsync(HttpRequestData req, long paymentContext, CancellationToken cancellationToken);
     }
 
     public class BillResolver : AbstractHttpResolver, IBillResolver
     {
         private readonly IBillCalculationService _billCalculationService;
+        private readonly IBillMinimizationService _billMinimizationService;
         private readonly IPaymentDatabaseService _paymentDatabaseService;
         private readonly IBillHttpMapper _httpMapper;
 
         public BillResolver(IPaymentDatabaseService paymentDatabaseService,
             IBillCalculationService billCalculationService,
+            IBillMinimizationService billMinimizationService,
             IBillHttpMapper httpMapper)
         {
             _paymentDatabaseService = paymentDatabaseService;
             _billCalculationService = billCalculationService;
+            _billMinimizationService = billMinimizationService;
             _httpMapper = httpMapper;
         }
 
@@ -80,6 +84,24 @@ namespace PaymentBackend.BL.Http
             List<Common.Generated.ShortBill> mappedBills = _httpMapper.MapShortBills(bills);
 
             Common.Generated.GetAllBillOverviewsResponse response = new()
+            {
+                Bills = mappedBills,
+                CalculationTime = calculationTime
+            };
+
+            return await BuildOkResponseAsync(req, response, cancellationToken);
+        }
+
+        public async Task<HttpResponseData> GetMinimizedBillsAsync(HttpRequestData req, long paymentContext, CancellationToken cancellationToken)
+        {
+            DateTime calculationTime = DateTime.UtcNow;
+
+            List<Common.Model.Dto.FullPaymentDto> allPayments = await _paymentDatabaseService.SelectAllPaymentsAsync(paymentContext, cancellationToken);
+            List<Common.Model.Bill> bills = _billCalculationService.GetBills(allPayments);
+            List<Common.Model.MinimizedBill> minimizedBills = _billMinimizationService.MinimizeBills(bills);
+            List<Common.Generated.ShortBill> mappedBills = _httpMapper.MapMinimizedBills(minimizedBills);
+
+            Common.Generated.GetMinimizedBillsResponse response = new()
             {
                 Bills = mappedBills,
                 CalculationTime = calculationTime

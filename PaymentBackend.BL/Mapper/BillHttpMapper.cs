@@ -4,6 +4,7 @@
     {
         List<Common.Generated.Bill> MapBills(List<Common.Model.Bill> internalBills);
         List<Common.Generated.ShortBill> MapShortBills(List<Common.Model.Bill> internalBills);
+        List<Common.Generated.ShortBill> MapMinimizedBills(List<Common.Model.MinimizedBill> minimizedBills);
     }
 
     public class BillHttpMapper : IBillHttpMapper
@@ -23,6 +24,16 @@
         public List<Common.Generated.ShortBill> MapShortBills(List<Common.Model.Bill> internalBills)
         {
             return [.. internalBills.Select(MapShortBill)];
+        }
+
+        public List<Common.Generated.ShortBill> MapMinimizedBills(List<Common.Model.MinimizedBill> minimizedBills)
+        {
+            return [.. minimizedBills.Select(bill => new Common.Generated.ShortBill()
+            {
+                IssuedBy = bill.IssuedBy,
+                IssuedFor = bill.IssuedFor,
+                Amount = Decimal.ToDouble(bill.Amount)
+            })];
         }
 
         private Common.Generated.Bill MapBill(Common.Model.Bill bill)

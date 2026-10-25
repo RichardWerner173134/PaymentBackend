@@ -17,6 +17,7 @@ namespace PaymentBackend.BL.DependencyInjection
             serviceCollection.AddSingleton<IFullPaymentDto2HttpPaymentMapper, FullPaymentDto2HttpPaymentMapper>();
             serviceCollection.AddSingleton<IPaymentOverviewCalculator, PaymentOverviewCalculator>();
             serviceCollection.AddSingleton<IBillCalculationService, BillCalculationService>();
+            serviceCollection.AddSingleton<IBillMinimizationService, BillMinimizationService>();
             serviceCollection.AddSingleton<IBillResolver, BillResolver>();
             serviceCollection.AddSingleton<IBillHttpMapper, BillHttpMapper>();
         }
